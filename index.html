@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لبن ماعز طازج</title>
+
+<style>
+body {font-family: Arial; background:#eee; padding:10px;}
+.container {max-width:420px; margin:auto; background:#fff; padding:15px; border-radius:15px;}
+
+.header {text-align:center;}
+.header img {width:150px;}
+
+.invoice {
+  border:2px solid black;
+  border-radius:15px;
+  padding:10px;
+  margin-top:10px;
+}
+
+.table {
+  width:100%;
+  border-collapse:collapse;
+}
+
+.table th, .table td {
+  border:1px solid black;
+  padding:8px;
+  text-align:center;
+}
+
+.table th {
+  background:black;
+  color:white;
+}
+
+.total {
+  background:black;
+  color:white;
+  padding:10px;
+  text-align:center;
+  font-weight:bold;
+}
+
+button {
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  background:black;
+  color:white;
+  border:none;
+  border-radius:8px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+<img src="logo.png">
+</div>
+
+<label>المحل</label>
+<select id="shop">
+<option>الدخيل</option>
+<option>ازهلها</option>
+<option>طلعة يوم</option>
+</select>
+
+<label>صغير</label>
+<input type="number" id="small">
+
+<label>كبير</label>
+<input type="number" id="big">
+
+<button onclick="generate()">إنشاء فاتورة</button>
+
+<div id="invoiceArea"></div>
+
+<button onclick="sendWhatsApp()">إرسال واتساب</button>
+
+</div>
+
+<script>
+
+let text = "";
+
+function generate(){
+let shop = document.getElementById("shop").value;
+let s = Number(document.getElementById("small").value || 0);
+let b = Number(document.getElementById("big").value || 0);
+
+let totalSmall = s*5;
+let totalBig = b*10;
+let total = totalSmall + totalBig;
+
+let date = new Date().toLocaleDateString('ar-EG');
+let no = Date.now();
+
+text = `فاتورة لبن ماعز طازج
+المحل: ${shop}
+التاريخ: ${date}
+صغير: ${s}
+كبير: ${b}
+الإجمالي: ${total} ريال`;
+
+document.getElementById("invoiceArea").innerHTML = `
+<div class="invoice">
+<div style="text-align:center;">
+<img src="logo.png" width="120">
+</div>
+
+<h3 style="text-align:center;">فاتورة</h3>
+
+<div>رقم: ${no}</div>
+<div>التاريخ: ${date}</div>
+<div>المحل: ${shop}</div>
+
+<table class="table">
+<tr><th>الصنف</th><th>العدد</th><th>السعر</th><th>الإجمالي</th></tr>
+<tr><td>صغير</td><td>${s}</td><td>5</td><td>${totalSmall}</td></tr>
+<tr><td>كبير</td><td>${b}</td><td>10</td><td>${totalBig}</td></tr>
+</table>
+
+<div class="total">الإجمالي: ${total} ريال</div>
+</div>
+`;
+}
+
+function sendWhatsApp(){
+let url = "https://wa.me/?text=" + encodeURIComponent(text);
+window.open(url, "_blank");
+}
+
+</script>
+
+</body>
+</html>
