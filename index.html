@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>ألبان أم ماجد</title>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<style>
+body {font-family:Tahoma;background:#f2f2f2;margin:0;}
+.container {width:100%;max-width:100%;padding:20px;background:#fff;box-sizing:border-box;}
+h2 {text-align:center;}
+select,input {width:95%;padding:12px;margin:5px auto;display:block;text-align:center;font-size:16px;}
+button {width:95%;padding:12px;margin:5px auto;display:block;background:black;color:white;border:none;border-radius:6px;font-size:16px;}
+.total {font-size:22px;font-weight:bold;text-align:center;margin-top:10px;}
+.row {border-bottom:1px dashed #ccc;padding:10px;}
+.subtotal {font-size:14px;color:#555;}
+</style>
+</head>
+<body>
+
+<div class="container" id="invoice">
+
+<h2>ألبان أم ماجد</h2>
+
+<select id="customer" onchange="setPhone()">
+<option value="الدخيل" data-phone="966559355652">الدخيل</option>
+<option value="طلعة يوم ودوم" data-phone="966510863022">طلعة يوم ودوم</option>
+<option value="طلعتك ازهلها" data-phone="966553392246">طلعتك ازهلها</option>
+</select>
+
+<input type="text" id="phone" placeholder="رقم واتساب العميل">
+
+<div id="items"></div>
+
+<button onclick="addItem()">➕ إضافة منتج</button>
+
+<div class="total">المجموع الكلي: <span id="total">0</span> ريال</div>
+
+<button onclick="calc()">حساب</button>
+<button onclick="sendWhatsApp()">📲 إرسال واتساب</button>
+
+</div>
+
+<script>
+
+function setPhone(){
+let sel=document.getElementById("customer");
+let phone=sel.options[sel.selectedIndex].getAttribute("data-phone");
+document.getElementById("phone").value=phone;
+}
+
+function addItem(){
+let d=document.createElement("div");
+d.className="row";
+d.innerHTML=`
+<select class="product">
+<option>لبن</option>
+<option>بقل</option>
+<option>زبدة</option>
+<option>زبادي</option>
+<option>جبن</option>
+<option>سمن</option>
+</select>
+<input type="number" placeholder="العدد" class="q">
+<input type="number" placeholder="السعر" class="p">
+<div class="subtotal">المجموع: <span>0</span></div>`;
+document.getElementById("items").appendChild(d);
+}
+
+function calc(){
+let rows=document.querySelectorAll(".row");
+let total=0;
+
+rows.forEach(r=>{
+let q=r.querySelector(".q").value||0;
+let p=r.querySelector(".p").value||0;
+let sub=q*p;
+r.querySelector("span").innerText=sub;
+total+=sub;
+});
+
+document.getElementById("total").innerText=total;
+}
+
+function buildMessage(){
+let customer=document.getElementById("customer").value;
+let rows=document.querySelectorAll(".row");
+let total=document.getElementById("total").innerText;
+let date=new Date().toLocaleDateString();
+
+let msg=`فاتورة ألبان أم ماجد\n`;
+msg+=`العميل: ${customer}\n`;
+msg+=`التاريخ: ${date}\n\n`;
+
+rows.forEach(r=>{
+let product=r.querySelector(".product").value;
+let q=r.querySelector(".q").value;
+let p=r.querySelector(".p").value;
+let sub=r.querySelector("span").innerText;
+
+if(q){
+msg+=`${product} - عدد: ${q} - سعر: ${p} - مجموع: ${sub}\n`;
+}
+});
+
+msg+=`\nالمجموع الكلي: ${total} ريال`;
+return msg;
+}
+
+function sendWhatsApp(){
+let msg=buildMessage();
+let customerPhone=document.getElementById("phone").value;
+let myPhone="966503039284";
+
+if(customerPhone){
+window.open("https://wa.me/"+customerPhone+"?text="+encodeURIComponent(msg));
+}
+
+window.open("https://wa.me/"+myPhone+"?text="+encodeURIComponent(msg));
+}
+
+setPhone();
+
+</script>
+
+</body>
+</html>
