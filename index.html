@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام فواتير لبن</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+body{font-family:Arial;background:#f2f2f2;margin:0}
+.container{max-width:420px;margin:auto;padding:10px}
+.logo{text-align:center}
+.logo img{width:120px}
+input,select,button{width:100%;padding:12px;margin:6px 0;font-size:18px}
+button{background:#000;color:#fff;border:none;border-radius:8px}
+.invoice{background:#fff;padding:10px;margin-top:10px;border:1px solid #000}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="logo">
+<img src="logo.png">
+</div>
+
+<select id="shop">
+<option>الدخيل</option>
+<option>ازهلها</option>
+<option>طلعة يوم</option>
+</select>
+
+<input type="number" id="small" placeholder="صغير">
+<input type="number" id="big" placeholder="كبير">
+<input type="number" id="phone" placeholder="رقم العميل">
+
+<button onclick="generate()">إنشاء فاتورة</button>
+<button onclick="sendWhats()">إرسال واتساب</button>
+
+<div id="invoiceArea"></div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+import { getFirestore, addDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCmONCqISPVhlvfNZY5YJzKX4js5UdjtVM",
+  authDomain: "fawzi-alanazi.firebaseapp.com",
+  projectId: "fawzi-alanazi"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.text = "";
+
+window.generate = async function(){
+
+let s = Number(document.getElementById("small").value||0);
+let b = Number(document.getElementById("big").value||0);
+let shop = document.getElementById("shop").value;
+
+let total = (s*5)+(b*10);
+let date = new Date().toLocaleString('ar-EG');
+
+const snap = await getDocs(collection(db,"invoices"));
+let invoiceNumber = snap.size + 1;
+
+await addDoc(collection(db,"invoices"),{
+invoiceNumber, shop, small:s, big:b, total, date
+});
+
+window.text = `فاتورة رقم ${invoiceNumber}
+${shop}
+صغير:${s}
+كبير:${b}
+الإجمالي:${total}`;
+
+document.getElementById("invoiceArea").innerHTML =
+`<div class="invoice" id="invoice">
+<div style="text-align:center">
+<img src="logo.png" width="80"><br>
+<b>فاتورة رقم ${invoiceNumber}</b>
+</div>
+${date}<br>
+${shop}<br>
+صغير:${s}<br>
+كبير:${b}<br>
+<b>${total} ريال</b>
+</div>`;
+
+// PDF
+setTimeout(async ()=>{
+const { jsPDF } = window.jspdf;
+let element = document.getElementById("invoice");
+let canvas = await html2canvas(element);
+let imgData = canvas.toDataURL("image/png");
+
+let pdf = new jsPDF({unit:"mm",format:[80,200]});
+pdf.addImage(imgData,'PNG',0,0,80,0);
+pdf.save("invoice.pdf");
+},800);
+
+// تصفير
+document.getElementById("small").value="";
+document.getElementById("big").value="";
+document.getElementById("phone").value="";
+}
+
+window.sendWhats = function(){
+
+let client = document.getElementById("phone").value;
+
+let main = "966503039284";
+let shop = document.getElementById("shop").value;
+let branch = "";
+
+if(shop==="الدخيل"){branch="966559355652";}
+if(shop==="طلعة يوم"){branch="966510863022";}
+if(shop==="ازهلها"){branch="966553392246";}
+
+let msg = encodeURIComponent(window.text);
+
+if(client){
+window.open("https://wa.me/"+client+"?text="+msg);
+}
+
+setTimeout(()=>window.open("https://wa.me/"+main+"?text="+msg),800);
+setTimeout(()=>window.open("https://wa.me/"+branch+"?text="+msg),1500);
+
+}
+</script>
+
+</body>
+</html>
