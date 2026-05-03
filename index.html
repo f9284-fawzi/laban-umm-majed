@@ -154,11 +154,8 @@
                         <label>المنتج</label>
                         <select id="s-product" onchange="setPrice()">
                             <option value="" data-p="0">اختر المنتج...</option>
-                            <option value="لبن طازج" data-p="10">لبن طازج (10 ريال)</option>
-                            <option value="حليب طازج" data-p="10">حليب طازج (10 ريال)</option>
-                            <option value="زبادي بلدي" data-p="15">زبادي بلدي (15 ريال)</option>
-                            <option value="قشطة" data-p="20">قشطة (20 ريال)</option>
-                            <option value="سمن غنم" data-p="50">سمن غنم (50 ريال)</option>
+                            <option value="لبن صغير" data-p="5">لبن صغير (5 ريال)</option>
+                            <option value="لبن كبير" data-p="10">لبن كبير (10 ريال)</option>
                         </select>
                     </div>
                 </div>
@@ -263,6 +260,7 @@
                         <th>العميل</th>
                         <th>الأصناف</th>
                         <th>الإجمالي</th>
+                        <th>حذف</th>
                     </tr>
                 </thead>
                 <tbody id="sales-report-rows"></tbody>
@@ -275,6 +273,7 @@
                     <tr>
                         <th>التاريخ</th>
                         <th>المبلغ المصروف</th>
+                        <th>حذف</th>
                     </tr>
                 </thead>
                 <tbody id="exp-report-rows"></tbody>
@@ -287,7 +286,7 @@
         let currentCart = [];
         let dbSales = JSON.parse(localStorage.getItem('dbSales')) || [];
         let dbExp = JSON.parse(localStorage.getItem('dbExp')) || [];
-        let currentInvoice = null; // لتخزين بيانات الفاتورة المفتوحة حالياً بدقة
+        let currentInvoice = null;
 
         function doLogin() {
             if(document.getElementById('pass-input').value === "1234") {
@@ -395,7 +394,6 @@
             dbSales.push(finalSale);
             localStorage.setItem('dbSales', JSON.stringify(dbSales));
 
-            // حفظ الفاتورة الحالية في الذاكرة لتجهيز الواتساب فوراً
             currentInvoice = finalSale;
 
             document.getElementById('inv-id').innerText = invoiceId;
@@ -428,6 +426,22 @@
             document.getElementById('s-date').valueAsDate = new Date();
         }
 
+        function deleteSale(index) {
+            if(confirm("هل أنت متأكد من حذف هذه الفاتورة نهائياً؟")) {
+                dbSales.splice(index, 1);
+                localStorage.setItem('dbSales', JSON.stringify(dbSales));
+                loadStats();
+            }
+        }
+
+        function deleteExp(index) {
+            if(confirm("هل أنت متأكد من حذف هذا المصروف؟")) {
+                dbExp.splice(index, 1);
+                localStorage.setItem('dbExp', JSON.stringify(dbExp));
+                loadStats();
+            }
+        }
+
         function handleExp(e) {
             e.preventDefault();
             let exp = {
@@ -457,7 +471,7 @@
 
             let sReportBody = document.getElementById('sales-report-rows');
             sReportBody.innerHTML = '';
-            dbSales.forEach(sale => {
+            dbSales.forEach((sale, index) => {
                 let itemsList = sale.items.map(i => `${i.prod} (x${i.qty})`).join(', ');
                 sReportBody.innerHTML += `
                     <tr>
@@ -466,26 +480,26 @@
                         <td>${sale.client}</td>
                         <td>${itemsList}</td>
                         <td style="font-weight: bold;">${sale.total} ريال</td>
+                        <td><button onclick="deleteSale(${index})" style="background:none; border:none; color:black; cursor:pointer;"><i class="fa-solid fa-trash"></i></button></td>
                     </tr>
                 `;
             });
 
             let eReportBody = document.getElementById('exp-report-rows');
             eReportBody.innerHTML = '';
-            dbExp.forEach(exp => {
+            dbExp.forEach((exp, index) => {
                 eReportBody.innerHTML += `
                     <tr>
                         <td>${exp.date}</td>
                         <td style="font-weight: bold;">${exp.total} ريال</td>
+                        <td><button onclick="deleteExp(${index})" style="background:none; border:none; color:black; cursor:pointer;"><i class="fa-solid fa-trash"></i></button></td>
                     </tr>
                 `;
             });
         }
 
-        // الحل الجذري لمشكلة الواتساب: دالة تقوم بإنشاء وتحديث الرابط فور النقر عليه
         function prepareWA(event) {
             if (!currentInvoice) {
-                // إذا لم يتم توليد فاتورة جديدة، احضر آخر فاتورة مسجلة
                 currentInvoice = dbSales[dbSales.length - 1];
             }
 
@@ -512,10 +526,7 @@
             txt += `💰 *الإجمالي الكلي:* *${currentInvoice.total} ريال*\n\n`;
             txt += `✨ *شكراً لتعاملكم معنا، ونتشرف بزيارتكم مرة أخرى!* ✨`;
 
-            // تشفير النص ليكون متوافقاً مع الروابط
             let encodedText = encodeURIComponent(txt);
-            
-            // استخدام رابط wa.me المباشر لتفادي أي حظر في المتصفح
             document.getElementById('wa-link').href = `https://wa.me/?text=${encodedText}`;
         }
 
