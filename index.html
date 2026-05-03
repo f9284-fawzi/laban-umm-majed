@@ -79,7 +79,6 @@
         .btn-print { background: #34495e; color: white; }
         .btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
-        /* سلة المشتريات المؤقتة */
         .cart-table {
             width: 100%;
             border-collapse: collapse;
@@ -125,7 +124,7 @@
         <img src="logo.png" style="width: 120px; margin-bottom: 20px;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3050/3050158.png'">
         <h1 style="color: var(--primary-color); margin-bottom: 10px;">ألبان أم ماجد</h1>
         <p style="color: #666; margin-bottom: 25px;">نظام الإدارة المالية للمنتجات</p>
-        <input type="password" id="pass-input" placeholder="أدخل الرقم السري" style="text-align: center; margin-bottom: 15px;">
+        <input type="password" id="pass-input" placeholder="أدخل الرقم السري (1234)" style="text-align: center; margin-bottom: 15px;">
         <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="doLogin()">دخول النظام</button>
     </div>
 
@@ -153,6 +152,7 @@
                             <option value="لبن طازج" data-p="10">لبن طازج (10 ريال)</option>
                             <option value="حليب طازج" data-p="10">حليب طازج (10 ريال)</option>
                             <option value="زبادي بلدي" data-p="15">زبادي بلدي (15 ريال)</option>
+                            <option value="قشطة" data-p="20">قشطة (20 ريال)</option>
                             <option value="سمن غنم" data-p="50">سمن غنم (50 ريال)</option>
                         </select>
                     </div>
@@ -162,11 +162,11 @@
                     <div class="form-group"><label>السعر الإفرادي</label><input type="number" id="s-price" oninput="recalc()"></div>
                     <div class="form-group"><label>الإجمالي للمنتج</label><input type="text" id="s-total" readonly style="background: #f1f1f1;"></div>
                 </div>
-                <button type="submit" class="btn btn-accent" style="width: 100%; justify-content: center;"><i class="fa-solid fa-cart-plus"></i> إضافة المنتج للسلة</button>
+                <button type="submit" class="btn btn-accent" style="width: 100%; justify-content: center;"><i class="fa-solid fa-plus"></i> إضافة المنتج الحالي للفاتورة</button>
             </form>
 
-            <div id="cart-section" style="margin-top: 30px; display: none;">
-                <h3 style="color: var(--primary-color);">الأصناف المضافة للعميل حالياً:</h3>
+            <div id="cart-section" style="margin-top: 30px; display: none; background: #fff; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <h3 style="color: var(--primary-color); margin-bottom: 10px;">الأصناف المضافة حالياً للعميل:</h3>
                 <table class="cart-table">
                     <thead>
                         <tr>
@@ -181,7 +181,7 @@
                 </table>
                 <p style="font-size: 1.3rem; font-weight: bold; text-align: left; margin-bottom: 15px;">الإجمالي الكلي: <span id="cart-grand-total" style="color: var(--primary-color);">0</span> ريال</p>
                 <div class="btn-group">
-                    <button type="button" class="btn btn-primary" onclick="checkoutSale()"><i class="fa-solid fa-file-invoice-dollar"></i> حفظ وإصدار فاتورة</button>
+                    <button type="button" class="btn btn-primary" onclick="checkoutSale()"><i class="fa-solid fa-file-invoice-dollar"></i> حفظ وإصدار الفاتورة النهائية</button>
                 </div>
             </div>
 
@@ -282,14 +282,13 @@
             document.getElementById('s-total').value = (q * p) + " ريال";
         }
 
-        // إضافة المنتج الحالي للسلة قبل الفوترة النهائية
         function addToCart(e) {
             e.preventDefault();
             let product = document.getElementById('s-product').value;
             let qty = parseFloat(document.getElementById('s-qty').value) || 1;
             let price = parseFloat(document.getElementById('s-price').value) || 0;
             
-            if(!product) { alert("من فضلك اختر منتجاً"); return; }
+            if(!product) { alert("من فضلك اختر منتجاً أولاً"); return; }
 
             currentCart.push({
                 prod: product,
@@ -298,13 +297,11 @@
                 total: qty * price
             });
 
-            // تعطيل تغيير الاسم والتاريخ أثناء إضافة نفس الأصناف لنفس العميل
             document.getElementById('s-client').readOnly = true;
             document.getElementById('s-date').readOnly = true;
 
             renderCart();
             
-            // إعادة ضبط حقول المنتج فقط لإضافة منتج آخر
             document.getElementById('s-product').selectedIndex = 0;
             document.getElementById('s-qty').value = 1;
             document.getElementById('s-price').value = '';
@@ -342,7 +339,6 @@
             renderCart();
         }
 
-        // حفظ الفاتورة بالكامل (كل الأصناف)
         function checkoutSale() {
             if(currentCart.length === 0) return;
 
@@ -355,14 +351,13 @@
                 id: invoiceId,
                 date: date,
                 client: client,
-                items: currentCart,
+                items: [...currentCart],
                 total: grandTotal
             };
 
             dbSales.push(finalSale);
             localStorage.setItem('dbSales', JSON.stringify(dbSales));
 
-            // تحديث عرض الفاتورة
             document.getElementById('inv-id').innerText = invoiceId;
             document.getElementById('inv-date').innerText = date;
             document.getElementById('inv-client').innerText = client;
@@ -385,12 +380,12 @@
 
             alert("تم حفظ الفاتورة بنجاح!");
 
-            // تصفير البيانات بعد البيع للبدء من جديد
             currentCart = [];
             document.getElementById('cart-section').style.display = 'none';
             document.getElementById('s-client').readOnly = false;
             document.getElementById('s-date').readOnly = false;
             document.getElementById('s-client').value = '';
+            document.getElementById('s-date').valueAsDate = new Date();
         }
 
         function handleExp(e) {
