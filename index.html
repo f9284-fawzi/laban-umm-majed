@@ -382,3 +382,141 @@
             let finalSale = {
                 id: invoiceId,
                 date: date,
+                client: client,
+                items: [...currentCart],
+                total: grandTotal
+            };
+
+            dbSales.push(finalSale);
+            localStorage.setItem('dbSales', JSON.stringify(dbSales));
+
+            document.getElementById('inv-id').innerText = invoiceId;
+            document.getElementById('inv-date').innerText = date;
+            document.getElementById('inv-client').innerText = client;
+
+            let tbody = document.getElementById('inv-rows');
+            tbody.innerHTML = '';
+            currentCart.forEach(item => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${item.prod}</td>
+                        <td>${item.qty}</td>
+                        <td>${item.price} ريال</td>
+                        <td>${item.total} ريال</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('inv-total').innerText = grandTotal + " ريال";
+            document.getElementById('invoice-card').style.display = 'block';
+
+            alert("تم حفظ الفاتورة بنجاح!");
+
+            currentCart = [];
+            document.getElementById('cart-section').style.display = 'none';
+            document.getElementById('s-client').readOnly = false;
+            document.getElementById('s-date').readOnly = false;
+            document.getElementById('s-client').value = '';
+            document.getElementById('s-date').valueAsDate = new Date();
+        }
+
+        function handleExp(e) {
+            e.preventDefault();
+            let exp = {
+                date: new Date().toLocaleDateString(),
+                total: parseFloat(document.getElementById('e-milk').value || 0) + 
+                       parseFloat(document.getElementById('e-packs').value || 0) + 
+                       parseFloat(document.getElementById('e-del').value || 0) + 
+                       parseFloat(document.getElementById('e-oth').value || 0)
+            };
+            dbExp.push(exp);
+            localStorage.setItem('dbExp', JSON.stringify(dbExp));
+            
+            // تصفير القيم في الحقول
+            document.getElementById('e-milk').value = 0;
+            document.getElementById('e-packs').value = 0;
+            document.getElementById('e-del').value = 0;
+            document.getElementById('e-oth').value = 0;
+            
+            alert("تم حفظ المصروفات");
+        }
+
+        function loadStats() {
+            let sTotal = dbSales.reduce((a, b) => a + b.total, 0);
+            let eTotal = dbExp.reduce((a, b) => a + b.total, 0);
+            document.getElementById('stat-sales').innerText = sTotal + " ريال";
+            document.getElementById('stat-exp').innerText = eTotal + " ريال";
+            document.getElementById('stat-profit').innerText = (sTotal - eTotal) + " ريال";
+
+            // تحميل جدول تفاصيل المبيعات
+            let sReportBody = document.getElementById('sales-report-rows');
+            sReportBody.innerHTML = '';
+            dbSales.forEach(sale => {
+                let itemsList = sale.items.map(i => `${i.prod} (x${i.qty})`).join(', ');
+                sReportBody.innerHTML += `
+                    <tr>
+                        <td>#${sale.id}</td>
+                        <td>${sale.date}</td>
+                        <td>${sale.client}</td>
+                        <td>${itemsList}</td>
+                        <td style="font-weight: bold; color: var(--primary-color);">${sale.total} ريال</td>
+                    </tr>
+                `;
+            });
+
+            // تحميل جدول تفاصيل المصروفات
+            let eReportBody = document.getElementById('exp-report-rows');
+            eReportBody.innerHTML = '';
+            dbExp.forEach(exp => {
+                eReportBody.innerHTML += `
+                    <tr>
+                        <td>${exp.date}</td>
+                        <td style="font-weight: bold; color: #e74c3c;">${exp.total} ريال</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function shareWA() {
+            let client = document.getElementById('inv-client').innerText;
+            let total = document.getElementById('inv-total').innerText;
+            let txt = `*فاتورة ألبان أم ماجد*%0A*العميل:* ${client}%0A*الأصناف:*%0A`;
+            
+            dbSales[dbSales.length - 1].items.forEach(item => {
+                txt += `- ${item.prod} (الكمية: ${item.qty})%0A`;
+            });
+            
+            txt += `*الإجمالي الكلي:* ${total}`;
+            window.open(`https://wa.me/?text=${txt}`, '_blank');
+        }
+
+        function exportData(type) {
+            let data = type === 'sales' ? dbSales : dbExp;
+            if(data.length === 0) { alert("لا توجد بيانات لتصديرها!"); return; }
+
+            let csv = "data:text/csv;charset=utf-8,\uFEFF";
+            
+            if(type === 'sales') {
+                csv += "رقم الفاتورة,التاريخ,العميل,الأصناف,الإجمالي\n";
+                data.forEach(r => {
+                    let itemsList = r.items.map(i => `${i.prod} (x${i.qty})`).join(' - ');
+                    csv += `#${r.id},${r.date},${r.client},"${itemsList}",${r.total}\n`;
+                });
+            } else {
+                csv += "التاريخ,المبلغ المصروف\n";
+                data.forEach(r => {
+                    csv += `${r.date},${r.total}\n`;
+                });
+            }
+
+            let encoded = encodeURI(csv);
+            let link = document.createElement("a");
+            link.setAttribute("href", encoded);
+            link.setAttribute("download", `${type}_report_${new Date().toLocaleDateString()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
