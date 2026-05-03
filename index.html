@@ -510,11 +510,11 @@
             }
 
             let txt = `🥛 *ألبان أم ماجد - فاتورة مبيعات* 🥛\n`;
-            txt += `──────────────────\n`;
+            txt += `───────\n`;
             txt += `🧾 *رقم الفاتورة:* #${currentInvoice.id}\n`;
             txt += `📅 *التاريخ:* ${currentInvoice.date}\n`;
             txt += `👤 *العميل:* ${currentInvoice.client}\n`;
-            txt += `──────────────────\n`;
+            txt += `───────\n`;
             txt += `🛍️ *الأصناف المشتراة:*\n`;
 
             currentInvoice.items.forEach((item, index) => {
@@ -522,7 +522,7 @@
                 txt += `   الكمية: ${item.qty} × ${item.price} ريال = *${item.total} ريال*\n`;
             });
 
-            txt += `──────────────────\n`;
+            txt += `─────\n`;
             txt += `💰 *الإجمالي الكلي:* *${currentInvoice.total} ريال*\n\n`;
             txt += `✨ *شكرا لتعاملكم معنا ،، ام ماجد* ✨`;
 
