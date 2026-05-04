@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>دورة الذكاء العاطفي</title>
+
+<style>
+body {
+    font-family: 'Tahoma';
+    background: #eef2f7;
+    margin: 0;
+}
+
+.header {
+    background: #1a237e;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+}
+
+h2 {
+    color: #1a237e;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+}
+
+button {
+    background: #1a237e;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.certificate {
+    display: none;
+    margin-top: 30px;
+    border: 6px double #000;
+    padding: 40px;
+    text-align: center;
+    background: #fff;
+}
+
+.pass { color: green; font-weight: bold; }
+.fail { color: red; font-weight: bold; }
+
+.footer {
+    margin-top: 40px;
+    display: flex;
+    justify-content: space-between;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+    <h1>منصة التدريب التربوي</h1>
+    <p>دورة الذكاء العاطفي للمعلمين</p>
+</div>
+
+<div class="container">
+
+<h2>📘 محتوى الدورة</h2>
+
+<p>
+الذكاء العاطفي هو قدرة المعلم على فهم مشاعره وتنظيمها
+والتعامل مع الطلاب بطريقة إيجابية داخل البيئة التعليمية.
+</p>
+
+<ul>
+<li>إدارة المشاعر داخل الصف</li>
+<li>التعاطف مع الطلاب</li>
+<li>حل المشكلات السلوكية</li>
+</ul>
+
+<hr>
+
+<h2>📝 بيانات المتدرب</h2>
+<input type="text" id="name" placeholder="الاسم الكامل">
+<input type="text" id="major" placeholder="التخصص">
+
+<hr>
+
+<h2>📋 الاختبار</h2>
+
+<p>1- الذكاء العاطفي يساعد على إدارة الصف؟</p>
+<input type="radio" name="q1" value="صح"> صح
+<input type="radio" name="q1" value="خطأ"> خطأ
+
+<p>2- من مهارات الذكاء العاطفي:</p>
+<input type="radio" name="q2" value="التعاطف"> التعاطف
+<input type="radio" name="q2" value="الغضب"> الغضب
+
+<p>3- المعلم الناجح يتجاهل مشاعر الطلاب:</p>
+<input type="radio" name="q3" value="صح"> صح
+<input type="radio" name="q3" value="خطأ"> خطأ
+
+<br><br>
+
+<button onclick="submitTest()">إنهاء الاختبار</button>
+
+<p id="result"></p>
+
+<div class="certificate" id="certificate">
+
+    <img src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Ministry_of_Education_Saudi_Arabia_Logo.svg" 
+    style="width:120px; margin-bottom:15px;">
+
+    <p style="font-size:14px; color:gray;">
+وزارة التعليم - المملكة العربية السعودية
+</p>
+
+    <h2>🎓 شهادة إتمام دورة</h2>
+
+    <p><b>متوسطة ابن القيم</b></p>
+
+    <p>تشهد بأن</p>
+    <h2 id="certName"></h2>
+
+    <p>تخصص: <span id="certMajor"></span></p>
+
+    <p>قد أتم دورة <b>الذكاء العاطفي للمعلمين</b></p>
+
+    <p>بتقدير: <span id="grade"></span></p>
+
+    <div class="footer">
+        <div>
+            <p>مدير المدرسة</p>
+            <p><b>عبدالسلام بن حمدان العلي</b></p>
+        </div>
+
+        <div>
+            <p>التاريخ</p>
+            <p id="date"></p>
+        </div>
+    </div>
+
+    <br>
+    <button onclick="window.print()">🖨️ طباعة الشهادة</button>
+
+</div>
+
+</div>
+
+<script>
+
+function submitTest() {
+
+    let name = document.getElementById("name").value;
+    let major = document.getElementById("major").value;
+
+    if(name === "" || major === "") {
+        alert("اكتب بياناتك أولاً");
+        return;
+    }
+
+    let score = 0;
+
+    if(document.querySelector('input[name="q1"]:checked')?.value === "صح") score++;
+    if(document.querySelector('input[name="q2"]:checked')?.value === "التعاطف") score++;
+    if(document.querySelector('input[name="q3"]:checked')?.value === "خطأ") score++;
+
+    let percentage = (score / 3) * 100;
+
+    let resultText = document.getElementById("result");
+
+    if(percentage >= 70) {
+        resultText.innerHTML = "✔️ ناجح بنسبة " + percentage + "%";
+        resultText.className = "pass";
+
+        document.getElementById("certName").innerText = name;
+        document.getElementById("certMajor").innerText = major;
+        document.getElementById("grade").innerText = percentage + "%";
+
+        let today = new Date().toLocaleDateString('ar-EG');
+        document.getElementById("date").innerText = today;
+
+        document.getElementById("certificate").style.display = "block";
+
+    } else {
+        resultText.innerHTML = "❌ راسب، حاول مرة أخرى";
+        resultText.className = "fail";
+    }
+}
+
+</script>
+
+</body>
+</html>
