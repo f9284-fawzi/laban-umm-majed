@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام باركود المنتجات</title>
+
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+
+<style>
+
+body{
+    font-family:Tahoma;
+    background:#f3f4f7;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    margin:0;
+}
+
+.box{
+    background:#fff;
+    width:90%;
+    max-width:420px;
+    padding:20px;
+    border-radius:18px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+
+h2{
+    text-align:center;
+    margin-bottom:20px;
+    color:#222;
+}
+
+.field{
+    margin-bottom:15px;
+}
+
+label{
+    display:block;
+    margin-bottom:6px;
+    font-weight:bold;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    font-size:16px;
+    box-sizing:border-box;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.createBtn{
+    background:#007bff;
+    color:#fff;
+}
+
+#printArea{
+    margin-top:25px;
+    text-align:center;
+    display:none;
+    border:2px dashed #007bff;
+    border-radius:15px;
+    padding:15px;
+    background:#fff;
+}
+
+.logo{
+    font-size:22px;
+    font-weight:bold;
+    margin-bottom:10px;
+    color:#007bff;
+}
+
+.productName{
+    font-size:22px;
+    font-weight:bold;
+    margin:10px 0;
+}
+
+.price{
+    color:red;
+    font-size:30px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.date{
+    color:#666;
+    font-size:13px;
+    margin-top:10px;
+}
+
+.printBtn{
+    background:#28a745;
+    color:#fff;
+    margin-top:15px;
+}
+
+@media print {
+
+    body{
+        background:#fff;
+    }
+
+    .box{
+        box-shadow:none;
+        width:100%;
+    }
+
+    .createBtn,
+    .printBtn,
+    input,
+    label,
+    h2{
+        display:none;
+    }
+
+    #printArea{
+        display:block;
+        border:none;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h2>طباعة باركود المنتجات</h2>
+
+    <div class="field">
+        <label>اسم المنتج</label>
+        <input type="text" id="pName">
+    </div>
+
+    <div class="field">
+        <label>السعر</label>
+        <input type="number" id="pPrice">
+    </div>
+
+    <div class="field">
+        <label>التاريخ</label>
+        <input type="date" id="pDate">
+    </div>
+
+    <button class="createBtn" onclick="createBarcode()">
+        توليد الباركود
+    </button>
+
+    <div id="printArea">
+
+        <div class="logo">
+            ألبان أم ماجد
+        </div>
+
+        <div class="productName" id="outName"></div>
+
+        <div class="price" id="outPrice"></div>
+
+        <svg id="barcode"></svg>
+
+        <div class="date" id="outDate"></div>
+
+        <button class="printBtn" onclick="window.print()">
+            طباعة
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+document.getElementById('pDate').valueAsDate = new Date();
+
+function createBarcode(){
+
+    const name  = document.getElementById('pName').value;
+    const price = document.getElementById('pPrice').value;
+    const date  = document.getElementById('pDate').value;
+
+    if(!name || !price){
+
+        alert("أدخل البيانات كاملة");
+        return;
+    }
+
+    document.getElementById('printArea').style.display = 'block';
+
+    document.getElementById('outName').innerText = name;
+    document.getElementById('outPrice').innerText = price + " ريال";
+    document.getElementById('outDate').innerText = "التاريخ: " + date;
+
+    let barcodeNumber = Math.floor(100000000000 + Math.random() * 900000000000);
+
+    JsBarcode("#barcode", barcodeNumber.toString(), {
+
+        format: "CODE128",
+        lineColor:"#000",
+        width:2,
+        height:60,
+        displayValue:true
+
+    });
+}
+
+</script>
+
+</body>
+</html>
