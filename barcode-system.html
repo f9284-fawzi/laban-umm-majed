@@ -1,226 +1,147 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نظام باركود المنتجات</title>
-
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-
-<style>
-
-body{
-    font-family:Tahoma;
-    background:#f3f4f7;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:100vh;
-    margin:0;
-}
-
-.box{
-    background:#fff;
-    width:90%;
-    max-width:420px;
-    padding:20px;
-    border-radius:18px;
-    box-shadow:0 5px 20px rgba(0,0,0,0.1);
-}
-
-h2{
-    text-align:center;
-    margin-bottom:20px;
-    color:#222;
-}
-
-.field{
-    margin-bottom:15px;
-}
-
-label{
-    display:block;
-    margin-bottom:6px;
-    font-weight:bold;
-}
-
-input{
-    width:100%;
-    padding:12px;
-    border:1px solid #ddd;
-    border-radius:10px;
-    font-size:16px;
-    box-sizing:border-box;
-}
-
-button{
-    width:100%;
-    padding:14px;
-    border:none;
-    border-radius:10px;
-    font-size:16px;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-.createBtn{
-    background:#007bff;
-    color:#fff;
-}
-
-#printArea{
-    margin-top:25px;
-    text-align:center;
-    display:none;
-    border:2px dashed #007bff;
-    border-radius:15px;
-    padding:15px;
-    background:#fff;
-}
-
-.logo{
-    font-size:22px;
-    font-weight:bold;
-    margin-bottom:10px;
-    color:#007bff;
-}
-
-.productName{
-    font-size:22px;
-    font-weight:bold;
-    margin:10px 0;
-}
-
-.price{
-    color:red;
-    font-size:30px;
-    font-weight:bold;
-    margin-bottom:10px;
-}
-
-.date{
-    color:#666;
-    font-size:13px;
-    margin-top:10px;
-}
-
-.printBtn{
-    background:#28a745;
-    color:#fff;
-    margin-top:15px;
-}
-
-@media print {
-
-    body{
-        background:#fff;
-    }
-
-    .box{
-        box-shadow:none;
-        width:100%;
-    }
-
-    .createBtn,
-    .printBtn,
-    input,
-    label,
-    h2{
-        display:none;
-    }
-
-    #printArea{
-        display:block;
-        border:none;
-    }
-}
-
-</style>
-</head>
-
-<body>
-
-<div class="box">
-
-    <h2>طباعة باركود المنتجات</h2>
-
-    <div class="field">
-        <label>اسم المنتج</label>
-        <input type="text" id="pName">
-    </div>
-
-    <div class="field">
-        <label>السعر</label>
-        <input type="number" id="pPrice">
-    </div>
-
-    <div class="field">
-        <label>التاريخ</label>
-        <input type="date" id="pDate">
-    </div>
-
-    <button class="createBtn" onclick="createBarcode()">
-        توليد الباركود
-    </button>
-
-    <div id="printArea">
-
-        <div class="logo">
-            ألبان أم ماجد
-        </div>
-
-        <div class="productName" id="outName"></div>
-
-        <div class="price" id="outPrice"></div>
-
-        <svg id="barcode"></svg>
-
-        <div class="date" id="outDate"></div>
-
-        <button class="printBtn" onclick="window.print()">
-            طباعة
-        </button>
-
-    </div>
-
-</div>
-
 <script>
+let products = JSON.parse(localStorage.getItem("products")) || [];
+let editIndex = null;
 
-document.getElementById('pDate').valueAsDate = new Date();
+document.getElementById("shopName").value =
+localStorage.getItem("shopName") || "";
 
-function createBarcode(){
+document.getElementById("shopName").addEventListener("input", function(){
+    localStorage.setItem("shopName", this.value);
+});
 
-    const name  = document.getElementById('pName').value;
-    const price = document.getElementById('pPrice').value;
-    const date  = document.getElementById('pDate').value;
+function saveProducts(){
+    localStorage.setItem("products", JSON.stringify(products));
+}
 
-    if(!name || !price){
+function addProduct(){
+    let name = document.getElementById("name").value;
+    let price = document.getElementById("price").value;
+    let expiry = document.getElementById("expiry").value;
 
-        alert("أدخل البيانات كاملة");
+    if(!name || !price || !expiry){
+        alert("عبّ كل البيانات");
         return;
     }
 
-    document.getElementById('printArea').style.display = 'block';
+    if(editIndex !== null){
+        products[editIndex].name = name;
+        products[editIndex].price = price;
+        products[editIndex].expiry = expiry;
+        editIndex = null;
+        document.querySelector(".add-btn").textContent = "إضافة";
+    } else {
+        products.push({
+            name,
+            price,
+            expiry,
+            barcode: Date.now().toString()
+        });
+    }
 
-    document.getElementById('outName').innerText = name;
-    document.getElementById('outPrice').innerText = price + " ريال";
-    document.getElementById('outDate').innerText = "التاريخ: " + date;
+    saveProducts();
+    renderProducts();
 
-    let barcodeNumber = Math.floor(100000000000 + Math.random() * 900000000000);
+    document.getElementById("name").value="";
+    document.getElementById("price").value="";
+    document.getElementById("expiry").value="";
+}
 
-    JsBarcode("#barcode", barcodeNumber.toString(), {
+function editProduct(index){
+    let p = products[index];
 
-        format: "CODE128",
-        lineColor:"#000",
-        width:2,
-        height:60,
-        displayValue:true
+    document.getElementById("name").value = p.name;
+    document.getElementById("price").value = p.price;
+    document.getElementById("expiry").value = p.expiry;
 
+    editIndex = index;
+
+    document.querySelector(".add-btn").textContent = "حفظ التعديل";
+}
+
+function deleteProduct(index){
+    products.splice(index,1);
+    saveProducts();
+    renderProducts();
+}
+
+function printLabel(index){
+    let p = products[index];
+    let shop = localStorage.getItem("shopName") || "";
+
+    let win = window.open('', '', 'width=400,height=500');
+
+    win.document.write(`
+        <html>
+        <head>
+            <title>طباعة ملصق</title>
+            <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"><\/script>
+            <style>
+                body{
+                    font-family:Arial;
+                    text-align:center;
+                    padding:20px;
+                }
+                h2{
+                    margin-bottom:20px;
+                }
+            </style>
+        </head>
+        <body>
+            <h2>${shop}</h2>
+            <h3>${p.name}</h3>
+            <p>السعر: ${p.price} ر.س</p>
+            <p>الانتهاء: ${p.expiry}</p>
+            <svg id="printBarcode"></svg>
+
+            <script>
+                JsBarcode("#printBarcode", "${p.barcode}", {
+                    format:"CODE128",
+                    width:2,
+                    height:60,
+                    displayValue:true
+                });
+
+                window.onload=function(){
+                    window.print();
+                }
+            <\/script>
+        </body>
+        </html>
+    `);
+
+    win.document.close();
+}
+
+function renderProducts(){
+    let container = document.getElementById("products");
+    container.innerHTML="";
+
+    products.forEach((product,index)=>{
+        let div = document.createElement("div");
+        div.className="product";
+
+        div.innerHTML=`
+            <p><strong>${product.name}</strong></p>
+            <p>${product.price} ر.س</p>
+            <p>${product.expiry}</p>
+
+            <svg id="barcode${index}"></svg><br>
+
+            <button onclick="editProduct(${index})">تعديل</button>
+            <button class="print-btn" onclick="printLabel(${index})">طباعة</button>
+            <button class="delete-btn" onclick="deleteProduct(${index})">حذف</button>
+        `;
+
+        container.appendChild(div);
+
+        JsBarcode(`#barcode${index}`, product.barcode,{
+            format:"CODE128",
+            width:2,
+            height:50,
+            displayValue:true
+        });
     });
 }
 
+renderProducts();
 </script>
-
-</body>
-</html>
