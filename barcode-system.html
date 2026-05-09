@@ -1,147 +1,98 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>نظام طباعة الباركود</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; }
+        .container { max-width: 500px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #218838; }
+        
+        /* تنسيق منطقة الباركود للطباعة */
+        #printArea { margin-top: 30px; text-align: center; padding: 20px; border: 1px dashed #ccc; background: #fff; }
+        .label-title { font-size: 18px; font-weight: bold; margin-bottom: 5px; height: 24px; } /* اسم المحل فاضي */
+        .info { font-size: 14px; margin: 5px 0; }
+        
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea { position: absolute; left: 0; top: 0; width: 100%; border: none; }
+            button { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>إدخال بيانات المنتج</h2>
+    
+    <div class="input-group">
+        <label>اسم المنتج:</label>
+        <input type="text" id="productName" placeholder="مثال: كيك شوكولاتة">
+    </div>
+
+    <div class="input-group">
+        <label>كمية السكر:</label>
+        <input type="text" id="sugarAmount" placeholder="مثال: 5 جرام">
+    </div>
+
+    <div class="input-group">
+        <label>رقم الباركود (ID):</label>
+        <input type="text" id="barcodeValue" placeholder="أدخل أرقام الباركود">
+    </div>
+
+    <button onclick="generateBarcode()">توليد الباركود للطباعة</button>
+</div>
+
+<div id="printArea">
+    <div class="label-title" id="shopName"></div> <div id="pNameDisplay" style="font-weight: bold;"></div>
+    <div id="sugarDisplay"></div>
+    <svg id="barcode"></svg>
+    <div class="info">إنتاج: <span id="prodDate"></span></div>
+    <div class="info">انتهاء: <span id="expDate"></span></div>
+    <br>
+    <button onclick="window.print()" style="width: auto; background: #007bff;">طباعة الملصق</button>
+</div>
+
 <script>
-let products = JSON.parse(localStorage.getItem("products")) || [];
-let editIndex = null;
+    function generateBarcode() {
+        const name = document.getElementById('productName').value;
+        const sugar = document.getElementById('sugarAmount').value;
+        const barcodeVal = document.getElementById('barcodeValue').value;
 
-document.getElementById("shopName").value =
-localStorage.getItem("shopName") || "";
+        if(!barcodeVal) {
+            alert("يرجى إدخال رقم الباركود");
+            return;
+        }
 
-document.getElementById("shopName").addEventListener("input", function(){
-    localStorage.setItem("shopName", this.value);
-});
+        // إعداد التواريخ
+        const now = new Date();
+        const nextWeek = new Date();
+        nextWeek.setDate(now.getDate() + 7); // إضافة 7 أيام
 
-function saveProducts(){
-    localStorage.setItem("products", JSON.stringify(products));
-}
+        // تنسيق التاريخ ليظهر بشكل مقروء
+        const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
+        
+        document.getElementById('pNameDisplay').innerText = "المنتج: " + name;
+        document.getElementById('sugarDisplay').innerText = "السكر: " + sugar;
+        document.getElementById('prodDate').innerText = now.toLocaleDateString('en-GB', dateOptions);
+        document.getElementById('expDate').innerText = nextWeek.toLocaleDateString('en-GB', dateOptions);
 
-function addProduct(){
-    let name = document.getElementById("name").value;
-    let price = document.getElementById("price").value;
-    let expiry = document.getElementById("expiry").value;
-
-    if(!name || !price || !expiry){
-        alert("عبّ كل البيانات");
-        return;
-    }
-
-    if(editIndex !== null){
-        products[editIndex].name = name;
-        products[editIndex].price = price;
-        products[editIndex].expiry = expiry;
-        editIndex = null;
-        document.querySelector(".add-btn").textContent = "إضافة";
-    } else {
-        products.push({
-            name,
-            price,
-            expiry,
-            barcode: Date.now().toString()
+        // توليد الباركود
+        JsBarcode("#barcode", barcodeVal, {
+            format: "CODE128",
+            lineColor: "#000",
+            width: 2,
+            height: 50,
+            displayValue: true
         });
     }
-
-    saveProducts();
-    renderProducts();
-
-    document.getElementById("name").value="";
-    document.getElementById("price").value="";
-    document.getElementById("expiry").value="";
-}
-
-function editProduct(index){
-    let p = products[index];
-
-    document.getElementById("name").value = p.name;
-    document.getElementById("price").value = p.price;
-    document.getElementById("expiry").value = p.expiry;
-
-    editIndex = index;
-
-    document.querySelector(".add-btn").textContent = "حفظ التعديل";
-}
-
-function deleteProduct(index){
-    products.splice(index,1);
-    saveProducts();
-    renderProducts();
-}
-
-function printLabel(index){
-    let p = products[index];
-    let shop = localStorage.getItem("shopName") || "";
-
-    let win = window.open('', '', 'width=400,height=500');
-
-    win.document.write(`
-        <html>
-        <head>
-            <title>طباعة ملصق</title>
-            <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"><\/script>
-            <style>
-                body{
-                    font-family:Arial;
-                    text-align:center;
-                    padding:20px;
-                }
-                h2{
-                    margin-bottom:20px;
-                }
-            </style>
-        </head>
-        <body>
-            <h2>${shop}</h2>
-            <h3>${p.name}</h3>
-            <p>السعر: ${p.price} ر.س</p>
-            <p>الانتهاء: ${p.expiry}</p>
-            <svg id="printBarcode"></svg>
-
-            <script>
-                JsBarcode("#printBarcode", "${p.barcode}", {
-                    format:"CODE128",
-                    width:2,
-                    height:60,
-                    displayValue:true
-                });
-
-                window.onload=function(){
-                    window.print();
-                }
-            <\/script>
-        </body>
-        </html>
-    `);
-
-    win.document.close();
-}
-
-function renderProducts(){
-    let container = document.getElementById("products");
-    container.innerHTML="";
-
-    products.forEach((product,index)=>{
-        let div = document.createElement("div");
-        div.className="product";
-
-        div.innerHTML=`
-            <p><strong>${product.name}</strong></p>
-            <p>${product.price} ر.س</p>
-            <p>${product.expiry}</p>
-
-            <svg id="barcode${index}"></svg><br>
-
-            <button onclick="editProduct(${index})">تعديل</button>
-            <button class="print-btn" onclick="printLabel(${index})">طباعة</button>
-            <button class="delete-btn" onclick="deleteProduct(${index})">حذف</button>
-        `;
-
-        container.appendChild(div);
-
-        JsBarcode(`#barcode${index}`, product.barcode,{
-            format:"CODE128",
-            width:2,
-            height:50,
-            displayValue:true
-        });
-    });
-}
-
-renderProducts();
 </script>
+
+</body>
+</html>
