@@ -2,152 +2,131 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>نظام إدارة ملصقات ألبان أم ماجد</title>
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-    <!-- مكتبة لتصدير ملفات الإكسل -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج موافقة ولي الأمر على التصوير</title>
     <style>
-        body { font-family: 'Tahoma', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
-        .no-print { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .inputs { display: grid; grid-template-columns: 2fr 2fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        input, button { padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
-        button { cursor: pointer; color: white; border: none; font-weight: bold; transition: 0.3s; }
-        .btn-add { background: #27ae60; }
-        .btn-excel { background: #1f7244; }
-        .btn-wa { background: #25d366; }
-        .btn-clear { background: #e74c3c; }
-        button:hover { opacity: 0.8; }
-
-        #printArea { 
-            display: flex; flex-wrap: wrap; gap: 2mm; justify-content: flex-start;
-            background: white; width: 210mm; margin: 20px auto; min-height: 297mm; padding: 10mm; box-sizing: border-box;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
         }
-
-        .label-card {
-            width: 40mm; height: 20mm; border: 0.1mm solid #ccc; padding: 1.5mm;
-            box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+        .container {
+            max-width: 600px;
+            background: #fff;
+            margin: 0 auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-
-        .shop-name { font-size: 7pt; font-weight: bold; margin: 0; }
-        .prod-info { font-size: 7pt; margin: 0; font-weight: bold; text-align: center; }
-        .date-info { font-size: 5.5pt; margin: 0; color: #444; }
-        .barcode-svg { width: 100%; height: 8mm !important; }
-
-        @media print {
-            .no-print { display: none !important; }
-            #printArea { margin: 0; padding: 5mm; border: none; }
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        p {
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="tel"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        .radio-group {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px dashed #3498db;
+        }
+        .radio-option {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .radio-option input {
+            margin-left: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.8em;
+            color: #7f8c8d;
         }
     </style>
 </head>
 <body>
 
-<div class="no-print">
-    <h2 style="text-align: center; color: #2c3e50;">إدارة إنتاج ألبان أم ماجد</h2>
-    <div class="inputs">
-        <input type="text" id="shopName" placeholder="اسم المحل" value="ألبان أم ماجد">
-        <input type="text" id="productName" placeholder="المنتج">
-        <input type="text" id="price" placeholder="السعر">
-        <input type="date" id="prodDate">
-        <input type="number" id="count" placeholder="العدد" value="1">
-    </div>
-    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 10px;">
-        <button onclick="addNewBatch()" class="btn-add">إضافة وحفظ</button>
-        <button onclick="exportToExcel()" class="btn-excel">حفظ Excel</button>
-        <button onclick="sendToWhatsApp()" class="btn-wa">واتساب</button>
-        <button onclick="window.print()" style="background: #34495e;">طباعة</button>
-        <button onclick="clearAllData()" class="btn-clear">مسح الكل</button>
-    </div>
+<div class="container">
+    <h2>إقرار موافقة ولي الأمر</h2>
+    <p>بناءً على رغبة المدرسة في توثيق الأنشطة والفعاليات التعليمية، يرجى تحديد رغبتكم بشأن تصوير الطالب/الطالبة ونشرها في منصات المدرسة الرسمية.</p>
+    
+    <hr>
+
+    <!-- تم استخدام خدمة formspree لإرسال الإيميل مباشرة -->
+    <form action="https://formspree.io/f/f9284@hotmail.com" method="POST">
+        
+        <div class="form-group">
+            <label for="student_name">اسم الطالب/الطالبة بالكامل:</label>
+            <input type="text" id="student_name" name="اسم الطالب" required>
+        </div>
+
+        <div class="form-group">
+            <label for="parent_name">اسم ولي الأمر:</label>
+            <input type="text" id="parent_name" name="اسم ولي الأمر" required>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">رقم التواصل:</label>
+            <input type="tel" id="phone" name="رقم الجوال" required>
+        </div>
+
+        <div class="form-group">
+            <label>قرار ولي الأمر:</label>
+            <div class="radio-group">
+                <div class="radio-option">
+                    <input type="radio" id="agree" name="الموافقة" value="أوافق" required>
+                    <label for="agree">أوافق على التصوير والنشر</label>
+                </div>
+                <div class="radio-option">
+                    <input type="radio" id="disagree" name="الموافقة" value="لا أوافق">
+                    <label for="disagree">لا أوافق على التصوير</label>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit">إرسال النموذج</button>
+    </form>
+
+    <footer>جميع الحقوق محفوظة للمدرسة © 2026</footer>
 </div>
-
-<div id="printArea"></div>
-
-<script>
-    document.getElementById('prodDate').valueAsDate = new Date();
-
-    window.onload = loadSavedLabels;
-
-    function addNewBatch() {
-        const product = document.getElementById('productName').value;
-        const price = document.getElementById('price').value;
-        const count = parseInt(document.getElementById('count').value);
-        const pDate = document.getElementById('prodDate').value;
-
-        if (!product || !price) { alert("يرجى تعبئة البيانات"); return; }
-
-        const newBatch = {
-            id: Date.now(),
-            shop: document.getElementById('shopName').value,
-            product, price, count, pDate
-        };
-
-        let savedData = JSON.parse(localStorage.getItem('myLabels') || "[]");
-        savedData.push(newBatch);
-        localStorage.setItem('myLabels', JSON.stringify(savedData));
-
-        renderLabels(newBatch);
-        document.getElementById('productName').value = "";
-        document.getElementById('price').value = "";
-    }
-
-    function renderLabels(batch) {
-        const printArea = document.getElementById('printArea');
-        const pDate = new Date(batch.pDate);
-        const eDate = new Date(pDate);
-        eDate.setDate(pDate.getDate() + 7);
-
-        for (let i = 0; i < batch.count; i++) {
-            const labelId = `bc-${batch.id}-${i}`;
-            const html = `
-                <div class="label-card">
-                    <p class="shop-name">${batch.shop}</p>
-                    <p class="prod-info">${batch.product} - ${batch.price} ريال</p>
-                    <svg id="${labelId}" class="barcode-svg"></svg>
-                    <p class="date-info">إنتاج: ${pDate.toLocaleDateString('en-GB')} | انتهاء: ${eDate.toLocaleDateString('en-GB')}</p>
-                </div>`;
-            printArea.insertAdjacentHTML('beforeend', html);
-            JsBarcode("#" + labelId, batch.id.toString().slice(-8) + i, { format: "CODE128", displayValue: false, height: 40 });
-        }
-    }
-
-    function loadSavedLabels() {
-        let savedData = JSON.parse(localStorage.getItem('myLabels') || "[]");
-        savedData.forEach(renderLabels);
-    }
-
-    // وظيفة حفظ الإكسل
-    function exportToExcel() {
-        let savedData = JSON.parse(localStorage.getItem('myLabels') || "[]");
-        if (savedData.length === 0) return alert("لا توجد بيانات لتصديرها");
-
-        const worksheet = XLSX.utils.json_to_sheet(savedData.map(item => ({
-            "المحل": item.shop,
-            "المنتج": item.product,
-            "السعر": item.price,
-            "الكمية": item.count,
-            "تاريخ الإنتاج": item.pDate
-        })));
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "المنتجات");
-        XLSX.writeFile(workbook, "منتجات_ألبان_أم_ماجد.xlsx");
-    }
-
-    // وظيفة الإرسال للواتساب
-    function sendToWhatsApp() {
-        let savedData = JSON.parse(localStorage.getItem('myLabels') || "[]");
-        if (savedData.length === 0) return alert("القائمة فارغة");
-
-        let message = "📦 *قائمة إنتاج ألبان أم ماجد* %0A%0A";
-        savedData.forEach(item => {
-            message += `• *المنتج:* ${item.product}%0A  *السعر:* ${item.price} ريال%0A  *الكمية:* ${item.count}%0A  *التاريخ:* ${item.pDate}%0A---%0A`;
-        });
-
-        window.open(`https://wa.me/?text=${message}`, '_blank');
-    }
-
-    function clearAllData() {
-        if(confirm("مسح الكل؟")) { localStorage.removeItem('myLabels'); location.reload(); }
-    }
-</script>
 
 </body>
 </html>
