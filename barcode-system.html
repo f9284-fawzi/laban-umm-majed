@@ -2,27 +2,37 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>طباعة ملصقات 30mm x 15mm</title>
+    <title>نظام طباعة ملصقات ألبان أم ماجد</title>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <style>
-        /* التنسيق العام للشاشة */
-        body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 20px; }
-        .control-panel { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        input, button { padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        /* التنسيق للواجهة */
+        body { font-family: 'Tahoma', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        .no-print { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .inputs { display: grid; grid-template-columns: 2fr 2fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        input, button { padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
         button { cursor: pointer; background: #27ae60; color: white; border: none; font-weight: bold; }
-        
+        button:hover { background: #219150; }
+        .btn-clear { background: #e74c3c; }
+
         /* تنسيق منطقة الطباعة ورق A4 */
         #printArea { 
-            display: flex; flex-wrap: wrap; gap: 2mm; justify-content: flex-start;
-            background: white; padding: 10mm; width: 210mm; margin: 20px auto; min-height: 297mm;
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 1mm; /* مسافة بسيطة جداً بين الملصقات */
+            justify-content: flex-start;
+            background: white; 
+            width: 210mm; 
+            margin: 20px auto; 
+            min-height: 297mm;
+            padding: 10mm;
+            box-sizing: border-box;
         }
 
-        /* تنسيق الملصق الصغير جداً */
+        /* تنسيق الملصق (3سم × 1.5سم) */
         .label-card {
             width: 30mm; 
             height: 15mm; 
-            border: 0.1mm solid #eee; /* إطار خفيف جداً للمعالجة */
+            border: 0.1mm solid #ddd; /* إطار خفيف جداً للمساعدة في القص */
             padding: 1mm;
             box-sizing: border-box;
             display: flex;
@@ -30,79 +40,103 @@
             align-items: center;
             justify-content: space-between;
             overflow: hidden;
-            background: white;
+            position: relative;
         }
 
-        .shop-name { font-size: 6pt; font-weight: bold; margin: 0; white-space: nowrap; }
-        .prod-info { font-size: 5pt; margin: 0; line-height: 1; text-align: center; }
-        .barcode-svg { width: 100%; height: 6mm !important; }
+        .shop-name { font-size: 6pt; font-weight: bold; margin: 0; color: #333; }
+        .prod-info { font-size: 5.5pt; margin: 0; font-weight: bold; text-align: center; }
+        .date-info { font-size: 4.5pt; margin: 0; color: #555; }
+        .barcode-svg { width: 100%; height: 5mm !important; }
 
-        /* إعدادات الطباعة */
         @media print {
-            body { background: none; padding: 0; }
-            .control-panel, h2 { display: none; }
-            #printArea { margin: 0; padding: 0; width: 210mm; }
-            .label-card { border: none; } /* إخفاء الإطار عند الطباعة الحقيقية */
+            .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            #printArea { margin: 0; padding: 5mm; border: none; }
+            .label-card { border: 0.1mm solid #eee; } /* إطار باهت جداً للقص */
         }
     </style>
 </head>
 <body>
 
-<div class="control-panel">
-    <h2>توليد ملصقات (3سم × 1.5سم)</h2>
+<div class="no-print">
+    <h2 style="text-align: center; color: #2c3e50;">نظام ملصقات ألبان أم ماجد</h2>
     <div class="inputs">
         <input type="text" id="shopName" placeholder="اسم المحل" value="ألبان أم ماجد">
-        <input type="text" id="productName" placeholder="اسم المنتج">
+        <input type="text" id="productName" placeholder="اسم المنتج (مثلاً: لبن)">
         <input type="text" id="price" placeholder="السعر">
         <input type="date" id="prodDate">
-        <input type="number" id="quantity" placeholder="الكمية المطلوبة" value="1">
-        <button onclick="generateLabels()" style="grid-column: span 2;">إضافة للمعاينة</button>
+        <input type="number" id="count" placeholder="العدد" value="1" min="1">
     </div>
-    <button onclick="window.print()" style="width: 100%; background: #34495e;">بدء الطباعة (A4)</button>
+    <div style="display: flex; gap: 10px;">
+        <button onclick="addLabels()" style="flex: 2;">إضافة المنتجات للمعاينة</button>
+        <button onclick="clearLabels()" class="btn-clear" style="flex: 1;">مسح الكل</button>
+        <button onclick="window.print()" style="flex: 1; background: #34495e;">طباعة (A4)</button>
+    </div>
+    <p style="font-size: 12px; color: #666; margin-top: 10px;">* تاريخ الانتهاء سيتم حسابه تلقائياً بعد 7 أيام من تاريخ الإنتاج.</p>
 </div>
 
-<div id="printArea">
-    <!-- الملصقات ستظهر هنا -->
-</div>
+<!-- منطقة تجمع الملصقات -->
+<div id="printArea"></div>
 
 <script>
-    // تعيين تاريخ اليوم
+    // تعيين تاريخ اليوم افتراضياً
     document.getElementById('prodDate').valueAsDate = new Date();
 
-    function generateLabels() {
+    function addLabels() {
         const printArea = document.getElementById('printArea');
         const shop = document.getElementById('shopName').value;
         const product = document.getElementById('productName').value;
         const price = document.getElementById('price').value;
+        const count = parseInt(document.getElementById('count').value);
         const pDate = new Date(document.getElementById('prodDate').value);
-        const qty = document.getElementById('quantity').value;
 
-        // حساب تاريخ الانتهاء (+7 أيام)
+        if (!product || !price || isNaN(count)) {
+            alert("يرجى إدخال اسم المنتج والسعر والعدد");
+            return;
+        }
+
+        // حساب تاريخ الانتهاء (7 أيام)
         const eDate = new Date(pDate);
         eDate.setDate(pDate.getDate() + 7);
-        const dateStr = pDate.toLocaleDateString('en-GB') + " - " + eDate.toLocaleDateString('en-GB');
+        
+        const prodStr = pDate.toLocaleDateString('en-GB'); // DD/MM/YYYY
+        const expStr = eDate.toLocaleDateString('en-GB');
 
-        for (let i = 0; i < qty; i++) {
+        for (let i = 0; i < count; i++) {
             const labelId = "bc-" + Date.now() + i;
+            
+            // إنشاء كود الباركود (رقم عشوائي أو يمكن تغييره لكود ثابت للمنتج)
+            const barcodeValue = "00" + Math.floor(Math.random() * 999999);
+
             const labelHtml = `
                 <div class="label-card">
                     <p class="shop-name">${shop}</p>
                     <p class="prod-info">${product} - ${price} ريال</p>
                     <svg id="${labelId}" class="barcode-svg"></svg>
-                    <p class="prod-info" style="font-size: 4pt;">ت: ${dateStr}</p>
+                    <p class="date-info">إنتاج: ${prodStr} | انتهاء: ${expStr}</p>
                 </div>
             `;
-            printArea.innerHTML += labelHtml;
+            
+            printArea.insertAdjacentHTML('beforeend', labelHtml);
 
-            // توليد الباركود فورياً (استخدام قيمة عشوائية أو اسم المنتج)
-            setTimeout(() => {
-                JsBarcode("#" + labelId, "P-" + Math.floor(Math.random() * 10000), {
-                    format: "CODE128",
-                    displayValue: false,
-                    margin: 0,
-                    background: "transparent"
-                });
-            }, 10);
+            // توليد الباركود فوراً
+            JsBarcode("#" + labelId, barcodeValue, {
+                format: "CODE128",
+                displayValue: false,
+                margin: 0,
+                height: 30
+            });
+        }
+
+        // تصفير الحقول للإضافة التالية
+        document.getElementById('productName').value = "";
+        document.getElementById('price').value = "";
+        document.getElementById('count').value = "1";
+    }
+
+    function clearLabels() {
+        if(confirm("هل تريد مسح جميع الملصقات من المعاينة؟")) {
+            document.getElementById('printArea').innerHTML = "";
         }
     }
 </script>
