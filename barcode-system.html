@@ -2,142 +2,108 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام طباعة ملصقات الباركود</title>
-    <!-- مكتبة توليد الباركود -->
+    <title>طباعة ملصقات 30mm x 15mm</title>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 20px; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { color: #2c3e50; text-align: center; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        /* التنسيق العام للشاشة */
+        body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 20px; }
+        .control-panel { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        input, button { padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        button { cursor: pointer; background: #27ae60; color: white; border: none; font-weight: bold; }
         
-        .form-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        input, button { padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 16px; }
-        button { cursor: pointer; border: none; transition: 0.3s; }
-        .btn-add { background-color: #27ae60; color: white; grid-column: span 2; }
-        .btn-add:hover { background-color: #219150; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 30px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
-        th { background-color: #3498db; color: white; }
+        /* تنسيق منطقة الطباعة ورق A4 */
+        #printArea { 
+            display: flex; flex-wrap: wrap; gap: 2mm; justify-content: flex-start;
+            background: white; padding: 10mm; width: 210mm; margin: 20px auto; min-height: 297mm;
+        }
 
-        /* تنسيق الملصق عند الطباعة */
-        .print-area { display: none; }
+        /* تنسيق الملصق الصغير جداً */
+        .label-card {
+            width: 30mm; 
+            height: 15mm; 
+            border: 0.1mm solid #eee; /* إطار خفيف جداً للمعالجة */
+            padding: 1mm;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+            background: white;
+        }
+
+        .shop-name { font-size: 6pt; font-weight: bold; margin: 0; white-space: nowrap; }
+        .prod-info { font-size: 5pt; margin: 0; line-height: 1; text-align: center; }
+        .barcode-svg { width: 100%; height: 6mm !important; }
+
+        /* إعدادات الطباعة */
         @media print {
-            body * { visibility: hidden; }
-            .print-section, .print-section * { visibility: visible; }
-            .print-section { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
-            .label-card { 
-                width: 60mm; height: 40mm; /* حجم الملصق القياسي */
-                border: 1px solid #000; margin: 10px auto; padding: 5px; 
-                text-align: center; page-break-inside: avoid;
-            }
-            .label-card h3 { margin: 5px 0; font-size: 14px; }
-            .label-card p { margin: 2px 0; font-size: 12px; }
-            svg { width: 100%; max-height: 50px; }
+            body { background: none; padding: 0; }
+            .control-panel, h2 { display: none; }
+            #printArea { margin: 0; padding: 0; width: 210mm; }
+            .label-card { border: none; } /* إخفاء الإطار عند الطباعة الحقيقية */
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>نظام إدارة وطباعة الباركود</h2>
-    
-    <div class="form-group">
+<div class="control-panel">
+    <h2>توليد ملصقات (3سم × 1.5سم)</h2>
+    <div class="inputs">
         <input type="text" id="shopName" placeholder="اسم المحل" value="ألبان أم ماجد">
         <input type="text" id="productName" placeholder="اسم المنتج">
-        <input type="number" id="price" placeholder="السعر">
+        <input type="text" id="price" placeholder="السعر">
         <input type="date" id="prodDate">
-        <button class="btn-add" onclick="addProduct()">إضافة المنتج وحفظه</button>
+        <input type="number" id="quantity" placeholder="الكمية المطلوبة" value="1">
+        <button onclick="generateLabels()" style="grid-column: span 2;">إضافة للمعاينة</button>
     </div>
-
-    <table id="productTable">
-        <thead>
-            <tr>
-                <th>المنتج</th>
-                <th>السعر</th>
-                <th>الإنتاج</th>
-                <th>الانتهاء</th>
-                <th>الباركود</th>
-                <th>إجراء</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-    
-    <button onclick="window.print()" style="margin-top:20px; background:#34495e; color:white; width:100%;">طباعة الملصقات المختارة</button>
+    <button onclick="window.print()" style="width: 100%; background: #34495e;">بدء الطباعة (A4)</button>
 </div>
 
-<!-- منطقة المعاينة قبل الطباعة -->
-<div id="printArea" class="print-area print-section"></div>
+<div id="printArea">
+    <!-- الملصقات ستظهر هنا -->
+</div>
 
 <script>
-    // تحديد تاريخ اليوم تلقائياً
+    // تعيين تاريخ اليوم
     document.getElementById('prodDate').valueAsDate = new Date();
 
-    function addProduct() {
+    function generateLabels() {
+        const printArea = document.getElementById('printArea');
         const shop = document.getElementById('shopName').value;
-        const name = document.getElementById('productName').value;
+        const product = document.getElementById('productName').value;
         const price = document.getElementById('price').value;
         const pDate = new Date(document.getElementById('prodDate').value);
-        
-        if(!name || !price) { alert("يرجى ملء كافة الحقول"); return; }
+        const qty = document.getElementById('quantity').value;
 
-        // حساب تاريخ الانتهاء (بعد 7 أيام)
+        // حساب تاريخ الانتهاء (+7 أيام)
         const eDate = new Date(pDate);
         eDate.setDate(pDate.getDate() + 7);
-        
-        const prodStr = pDate.toLocaleDateString('en-GB');
-        const expStr = eDate.toLocaleDateString('en-GB');
-        const barcodeValue = Date.now().toString().slice(-8); // توليد رقم باركود فريد
+        const dateStr = pDate.toLocaleDateString('en-GB') + " - " + eDate.toLocaleDateString('en-GB');
 
-        // إضافة للجدول
-        const table = document.getElementById('productTable').getElementsByTagName('tbody')[0];
-        const row = table.insertRow();
-        row.innerHTML = `
-            <td>${name}</td>
-            <td>${price} ريال</td>
-            <td>${prodStr}</td>
-            <td>${expStr}</td>
-            <td><svg id="barcode${barcodeValue}"></svg></td>
-            <td><button onclick="deleteRow(this)" style="background:#e74c3c; color:white;">حذف</button></td>
-        `;
+        for (let i = 0; i < qty; i++) {
+            const labelId = "bc-" + Date.now() + i;
+            const labelHtml = `
+                <div class="label-card">
+                    <p class="shop-name">${shop}</p>
+                    <p class="prod-info">${product} - ${price} ريال</p>
+                    <svg id="${labelId}" class="barcode-svg"></svg>
+                    <p class="prod-info" style="font-size: 4pt;">ت: ${dateStr}</p>
+                </div>
+            `;
+            printArea.innerHTML += labelHtml;
 
-        // توليد الباركود
-        JsBarcode(`#barcode${barcodeValue}`, barcodeValue, {
-            format: "CODE128",
-            width: 1.5,
-            height: 40,
-            displayValue: true
-        });
-
-        // إضافة لملصقات الطباعة
-        const printArea = document.getElementById('printArea');
-        const label = document.createElement('div');
-        label.className = 'label-card';
-        label.innerHTML = `
-            <h3>${shop}</h3>
-            <p><strong>${name}</strong></p>
-            <p>السعر: ${price} ريال</p>
-            <p>الإنتاج: ${prodStr} | الانتهاء: ${expStr}</p>
-            <svg id="printBar${barcodeValue}"></svg>
-        `;
-        printArea.appendChild(label);
-        
-        JsBarcode(`#printBar${barcodeValue}`, barcodeValue, {
-            format: "CODE128",
-            width: 1.2,
-            height: 30
-        });
-
-        // مسح الحقول
-        document.getElementById('productName').value = "";
-        document.getElementById('price').value = "";
-    }
-
-    function deleteRow(btn) {
-        const row = btn.parentNode.parentNode;
-        row.parentNode.removeChild(row);
+            // توليد الباركود فورياً (استخدام قيمة عشوائية أو اسم المنتج)
+            setTimeout(() => {
+                JsBarcode("#" + labelId, "P-" + Math.floor(Math.random() * 10000), {
+                    format: "CODE128",
+                    displayValue: false,
+                    margin: 0,
+                    background: "transparent"
+                });
+            }, 10);
+        }
     }
 </script>
 
