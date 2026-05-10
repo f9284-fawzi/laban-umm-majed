@@ -1,132 +1,28 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نموذج موافقة ولي الأمر على التصوير</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-        .container {
-            max-width: 600px;
-            background: #fff;
-            margin: 0 auto;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        h2 {
-            color: #2c3e50;
-            text-align: center;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 10px;
-        }
-        p {
-            line-height: 1.6;
-            font-size: 1.1em;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-        input[type="text"], input[type="tel"], select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 1em;
-        }
-        .radio-group {
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px dashed #3498db;
-        }
-        .radio-option {
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-        }
-        .radio-option input {
-            margin-left: 10px;
-        }
-        button {
-            width: 100%;
-            padding: 15px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 1.2em;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
-        footer {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 0.8em;
-            color: #7f8c8d;
-        }
-    </style>
-</head>
-<body>
+<form action="https://api.staticforms.xyz/submit" method="POST">
+    <input type="hidden" name="accessKey" value="f9284@hotmail.com"> 
+    <div class="form-group">
+        <label for="student_name">اسم الطالب/الطالبة بالكامل:</label>
+        <input type="text" id="student_name" name="student_name" required>
+    </div>
 
-<div class="container">
-    <h2>إقرار موافقة ولي الأمر</h2>
-    <p>بناءً على رغبة المدرسة في توثيق الأنشطة والفعاليات التعليمية، يرجى تحديد رغبتكم بشأن تصوير الطالب/الطالبة ونشرها في منصات المدرسة الرسمية.</p>
-    
-    <hr>
+    <div class="form-group">
+        <label for="parent_name">اسم ولي الأمر:</label>
+        <input type="text" id="parent_name" name="parent_name" required>
+    </div>
 
-    <!-- تم استخدام خدمة formspree لإرسال الإيميل مباشرة -->
-    <form action="https://formspree.io/f/f9284@hotmail.com" method="POST">
-        
-        <div class="form-group">
-            <label for="student_name">اسم الطالب/الطالبة بالكامل:</label>
-            <input type="text" id="student_name" name="اسم الطالب" required>
-        </div>
-
-        <div class="form-group">
-            <label for="parent_name">اسم ولي الأمر:</label>
-            <input type="text" id="parent_name" name="اسم ولي الأمر" required>
-        </div>
-
-        <div class="form-group">
-            <label for="phone">رقم التواصل:</label>
-            <input type="tel" id="phone" name="رقم الجوال" required>
-        </div>
-
-        <div class="form-group">
-            <label>قرار ولي الأمر:</label>
-            <div class="radio-group">
-                <div class="radio-option">
-                    <input type="radio" id="agree" name="الموافقة" value="أوافق" required>
-                    <label for="agree">أوافق على التصوير والنشر</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" id="disagree" name="الموافقة" value="لا أوافق">
-                    <label for="disagree">لا أوافق على التصوير</label>
-                </div>
+    <div class="form-group">
+        <label>قرار ولي الأمر:</label>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="agree" name="consent" value="أوافق" required>
+                <label for="agree">أوافق على التصوير والنشر</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="disagree" name="consent" value="لا أوافق">
+                <label for="disagree">لا أوافق على التصوير</label>
             </div>
         </div>
+    </div>
 
-        <button type="submit">إرسال النموذج</button>
-    </form>
-
-    <footer>جميع الحقوق محفوظة للمدرسة © 2026</footer>
-</div>
-
-</body>
-</html>
+    <button type="submit">إرسال النموذج</button>
+</form>
