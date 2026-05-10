@@ -2,142 +2,150 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>نظام طباعة ملصقات ألبان أم ماجد</title>
+    <title>نظام إدارة ملصقات ألبان أم ماجد</title>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <!-- مكتبة لتصدير ملفات الإكسل -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <style>
-        /* التنسيق للواجهة */
         body { font-family: 'Tahoma', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
-        .no-print { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .no-print { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .inputs { display: grid; grid-template-columns: 2fr 2fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        input, button { padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
-        button { cursor: pointer; background: #27ae60; color: white; border: none; font-weight: bold; }
-        button:hover { background: #219150; }
+        input, button { padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
+        button { cursor: pointer; color: white; border: none; font-weight: bold; transition: 0.3s; }
+        .btn-add { background: #27ae60; }
+        .btn-excel { background: #1f7244; }
+        .btn-wa { background: #25d366; }
         .btn-clear { background: #e74c3c; }
+        button:hover { opacity: 0.8; }
 
-        /* تنسيق منطقة الطباعة ورق A4 */
         #printArea { 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 1mm; /* مسافة بسيطة جداً بين الملصقات */
-            justify-content: flex-start;
-            background: white; 
-            width: 210mm; 
-            margin: 20px auto; 
-            min-height: 297mm;
-            padding: 10mm;
-            box-sizing: border-box;
+            display: flex; flex-wrap: wrap; gap: 2mm; justify-content: flex-start;
+            background: white; width: 210mm; margin: 20px auto; min-height: 297mm; padding: 10mm; box-sizing: border-box;
         }
 
-        /* تنسيق الملصق (3سم × 1.5سم) */
         .label-card {
-            width: 30mm; 
-            height: 15mm; 
-            border: 0.1mm solid #ddd; /* إطار خفيف جداً للمساعدة في القص */
-            padding: 1mm;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            overflow: hidden;
-            position: relative;
+            width: 40mm; height: 20mm; border: 0.1mm solid #ccc; padding: 1.5mm;
+            box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: space-between;
         }
 
-        .shop-name { font-size: 6pt; font-weight: bold; margin: 0; color: #333; }
-        .prod-info { font-size: 5.5pt; margin: 0; font-weight: bold; text-align: center; }
-        .date-info { font-size: 4.5pt; margin: 0; color: #555; }
-        .barcode-svg { width: 100%; height: 5mm !important; }
+        .shop-name { font-size: 7pt; font-weight: bold; margin: 0; }
+        .prod-info { font-size: 7pt; margin: 0; font-weight: bold; text-align: center; }
+        .date-info { font-size: 5.5pt; margin: 0; color: #444; }
+        .barcode-svg { width: 100%; height: 8mm !important; }
 
         @media print {
             .no-print { display: none !important; }
-            body { background: white; padding: 0; }
             #printArea { margin: 0; padding: 5mm; border: none; }
-            .label-card { border: 0.1mm solid #eee; } /* إطار باهت جداً للقص */
         }
     </style>
 </head>
 <body>
 
 <div class="no-print">
-    <h2 style="text-align: center; color: #2c3e50;">نظام ملصقات ألبان أم ماجد</h2>
+    <h2 style="text-align: center; color: #2c3e50;">إدارة إنتاج ألبان أم ماجد</h2>
     <div class="inputs">
         <input type="text" id="shopName" placeholder="اسم المحل" value="ألبان أم ماجد">
-        <input type="text" id="productName" placeholder="اسم المنتج (مثلاً: لبن)">
+        <input type="text" id="productName" placeholder="المنتج">
         <input type="text" id="price" placeholder="السعر">
         <input type="date" id="prodDate">
-        <input type="number" id="count" placeholder="العدد" value="1" min="1">
+        <input type="number" id="count" placeholder="العدد" value="1">
     </div>
-    <div style="display: flex; gap: 10px;">
-        <button onclick="addLabels()" style="flex: 2;">إضافة المنتجات للمعاينة</button>
-        <button onclick="clearLabels()" class="btn-clear" style="flex: 1;">مسح الكل</button>
-        <button onclick="window.print()" style="flex: 1; background: #34495e;">طباعة (A4)</button>
+    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 10px;">
+        <button onclick="addNewBatch()" class="btn-add">إضافة وحفظ</button>
+        <button onclick="exportToExcel()" class="btn-excel">حفظ Excel</button>
+        <button onclick="sendToWhatsApp()" class="btn-wa">واتساب</button>
+        <button onclick="window.print()" style="background: #34495e;">طباعة</button>
+        <button onclick="clearAllData()" class="btn-clear">مسح الكل</button>
     </div>
-    <p style="font-size: 12px; color: #666; margin-top: 10px;">* تاريخ الانتهاء سيتم حسابه تلقائياً بعد 7 أيام من تاريخ الإنتاج.</p>
 </div>
 
-<!-- منطقة تجمع الملصقات -->
 <div id="printArea"></div>
 
 <script>
-    // تعيين تاريخ اليوم افتراضياً
     document.getElementById('prodDate').valueAsDate = new Date();
 
-    function addLabels() {
-        const printArea = document.getElementById('printArea');
-        const shop = document.getElementById('shopName').value;
+    window.onload = loadSavedLabels;
+
+    function addNewBatch() {
         const product = document.getElementById('productName').value;
         const price = document.getElementById('price').value;
         const count = parseInt(document.getElementById('count').value);
-        const pDate = new Date(document.getElementById('prodDate').value);
+        const pDate = document.getElementById('prodDate').value;
 
-        if (!product || !price || isNaN(count)) {
-            alert("يرجى إدخال اسم المنتج والسعر والعدد");
-            return;
-        }
+        if (!product || !price) { alert("يرجى تعبئة البيانات"); return; }
 
-        // حساب تاريخ الانتهاء (7 أيام)
-        const eDate = new Date(pDate);
-        eDate.setDate(pDate.getDate() + 7);
-        
-        const prodStr = pDate.toLocaleDateString('en-GB'); // DD/MM/YYYY
-        const expStr = eDate.toLocaleDateString('en-GB');
+        const newBatch = {
+            id: Date.now(),
+            shop: document.getElementById('shopName').value,
+            product, price, count, pDate
+        };
 
-        for (let i = 0; i < count; i++) {
-            const labelId = "bc-" + Date.now() + i;
-            
-            // إنشاء كود الباركود (رقم عشوائي أو يمكن تغييره لكود ثابت للمنتج)
-            const barcodeValue = "00" + Math.floor(Math.random() * 999999);
+        let savedData = JSON.parse(localStorage.getItem('myLabels') || "[]");
+        savedData.push(newBatch);
+        localStorage.setItem('myLabels', JSON.stringify(savedData));
 
-            const labelHtml = `
-                <div class="label-card">
-                    <p class="shop-name">${shop}</p>
-                    <p class="prod-info">${product} - ${price} ريال</p>
-                    <svg id="${labelId}" class="barcode-svg"></svg>
-                    <p class="date-info">إنتاج: ${prodStr} | انتهاء: ${expStr}</p>
-                </div>
-            `;
-            
-            printArea.insertAdjacentHTML('beforeend', labelHtml);
-
-            // توليد الباركود فوراً
-            JsBarcode("#" + labelId, barcodeValue, {
-                format: "CODE128",
-                displayValue: false,
-                margin: 0,
-                height: 30
-            });
-        }
-
-        // تصفير الحقول للإضافة التالية
+        renderLabels(newBatch);
         document.getElementById('productName').value = "";
         document.getElementById('price').value = "";
-        document.getElementById('count').value = "1";
     }
 
-    function clearLabels() {
-        if(confirm("هل تريد مسح جميع الملصقات من المعاينة؟")) {
-            document.getElementById('printArea').innerHTML = "";
+    function renderLabels(batch) {
+        const printArea = document.getElementById('printArea');
+        const pDate = new Date(batch.pDate);
+        const eDate = new Date(pDate);
+        eDate.setDate(pDate.getDate() + 7);
+
+        for (let i = 0; i < batch.count; i++) {
+            const labelId = `bc-${batch.id}-${i}`;
+            const html = `
+                <div class="label-card">
+                    <p class="shop-name">${batch.shop}</p>
+                    <p class="prod-info">${batch.product} - ${batch.price} ريال</p>
+                    <svg id="${labelId}" class="barcode-svg"></svg>
+                    <p class="date-info">إنتاج: ${pDate.toLocaleDateString('en-GB')} | انتهاء: ${eDate.toLocaleDateString('en-GB')}</p>
+                </div>`;
+            printArea.insertAdjacentHTML('beforeend', html);
+            JsBarcode("#" + labelId, batch.id.toString().slice(-8) + i, { format: "CODE128", displayValue: false, height: 40 });
         }
+    }
+
+    function loadSavedLabels() {
+        let savedData = JSON.parse(localStorage.getItem('myLabels') || "[]");
+        savedData.forEach(renderLabels);
+    }
+
+    // وظيفة حفظ الإكسل
+    function exportToExcel() {
+        let savedData = JSON.parse(localStorage.getItem('myLabels') || "[]");
+        if (savedData.length === 0) return alert("لا توجد بيانات لتصديرها");
+
+        const worksheet = XLSX.utils.json_to_sheet(savedData.map(item => ({
+            "المحل": item.shop,
+            "المنتج": item.product,
+            "السعر": item.price,
+            "الكمية": item.count,
+            "تاريخ الإنتاج": item.pDate
+        })));
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "المنتجات");
+        XLSX.writeFile(workbook, "منتجات_ألبان_أم_ماجد.xlsx");
+    }
+
+    // وظيفة الإرسال للواتساب
+    function sendToWhatsApp() {
+        let savedData = JSON.parse(localStorage.getItem('myLabels') || "[]");
+        if (savedData.length === 0) return alert("القائمة فارغة");
+
+        let message = "📦 *قائمة إنتاج ألبان أم ماجد* %0A%0A";
+        savedData.forEach(item => {
+            message += `• *المنتج:* ${item.product}%0A  *السعر:* ${item.price} ريال%0A  *الكمية:* ${item.count}%0A  *التاريخ:* ${item.pDate}%0A---%0A`;
+        });
+
+        window.open(`https://wa.me/?text=${message}`, '_blank');
+    }
+
+    function clearAllData() {
+        if(confirm("مسح الكل؟")) { localStorage.removeItem('myLabels'); location.reload(); }
     }
 </script>
 
