@@ -1,28 +1,123 @@
-<form action="https://api.staticforms.xyz/submit" method="POST">
-    <input type="hidden" name="accessKey" value="f9284@hotmail.com"> 
-    <div class="form-group">
-        <label for="student_name">اسم الطالب/الطالبة بالكامل:</label>
-        <input type="text" id="student_name" name="student_name" required>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>موافقة ولي الأمر على التصوير</title>
+<style>
+    body{
+        font-family: Tahoma, Arial;
+        background:#f5f7fa;
+        margin:0;
+        padding:20px;
+    }
+
+    .container{
+        max-width:500px;
+        margin:auto;
+        background:white;
+        padding:30px;
+        border-radius:15px;
+        box-shadow:0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    h1{
+        text-align:center;
+        color:#1e3a8a;
+        margin-bottom:25px;
+    }
+
+    label{
+        display:block;
+        margin-top:15px;
+        font-weight:bold;
+    }
+
+    input{
+        width:100%;
+        padding:12px;
+        margin-top:6px;
+        border:1px solid #ccc;
+        border-radius:8px;
+        box-sizing:border-box;
+        font-size:16px;
+    }
+
+    .agree{
+        margin-top:20px;
+        display:flex;
+        align-items:center;
+        gap:10px;
+    }
+
+    button{
+        width:100%;
+        margin-top:25px;
+        padding:14px;
+        background:#2563eb;
+        color:white;
+        border:none;
+        border-radius:10px;
+        font-size:18px;
+        cursor:pointer;
+    }
+
+    button:hover{
+        background:#1d4ed8;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>موافقة ولي الأمر على السماح بالتصوير</h1>
+
+    <label>اسم الطالب</label>
+    <input type="text" id="studentName" required>
+
+    <label>اسم ولي الأمر</label>
+    <input type="text" id="parentName" required>
+
+    <label>رقم التواصل</label>
+    <input type="tel" id="phone" required>
+
+    <div class="agree">
+        <input type="checkbox" id="agree">
+        <label for="agree">أوافق على السماح بتصوير ابني واستخدام الصور للأغراض التعليمية والإعلامية الخاصة بالمدرسة</label>
     </div>
 
-    <div class="form-group">
-        <label for="parent_name">اسم ولي الأمر:</label>
-        <input type="text" id="parent_name" name="parent_name" required>
-    </div>
+    <button onclick="sendForm()">إرسال الموافقة</button>
+</div>
 
-    <div class="form-group">
-        <label>قرار ولي الأمر:</label>
-        <div class="radio-group">
-            <div class="radio-option">
-                <input type="radio" id="agree" name="consent" value="أوافق" required>
-                <label for="agree">أوافق على التصوير والنشر</label>
-            </div>
-            <div class="radio-option">
-                <input type="radio" id="disagree" name="consent" value="لا أوافق">
-                <label for="disagree">لا أوافق على التصوير</label>
-            </div>
-        </div>
-    </div>
+<script>
+function sendForm() {
+    let student = document.getElementById("studentName").value;
+    let parent = document.getElementById("parentName").value;
+    let phone = document.getElementById("phone").value;
+    let agree = document.getElementById("agree").checked;
 
-    <button type="submit">إرسال النموذج</button>
-</form>
+    if(!student || !parent || !phone){
+        alert("يرجى تعبئة جميع البيانات");
+        return;
+    }
+
+    if(!agree){
+        alert("يجب الموافقة قبل الإرسال");
+        return;
+    }
+
+    let subject = "موافقة ولي أمر على التصوير";
+    let body =
+`اسم الطالب: ${student}
+اسم ولي الأمر: ${parent}
+رقم التواصل: ${phone}
+
+تمت الموافقة على السماح بالتصوير.`;
+
+    window.location.href =
+`mailto:F9284@hotmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+</script>
+
+</body>
+</html>
