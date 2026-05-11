@@ -3,141 +3,224 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نظام ملصقات المنتجات المتقدم</title>
+<title>نظام تسعيرة وطباعة الملصقات</title>
+
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+
 <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
-    h1 { text-align: center; }
-    input, button { padding: 5px; margin: 5px; }
-    .label-sheet { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
-    .label { width: 180px; height: 120px; border: 1px solid #ccc; padding: 5px; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 14px; }
-    .label svg { margin-top: 5px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-    @media print {
-        body { background: #fff; }
-        .label-sheet { gap: 5px; }
-        .label { page-break-inside: avoid; }
-        input, button, table { display: none; }
-    }
+body{
+font-family:Tahoma,Arial;
+background:#f4f6f8;
+padding:20px;
+margin:0;
+}
+
+h1{
+text-align:center;
+color:#222;
+}
+
+.controls{
+background:white;
+padding:15px;
+border-radius:10px;
+margin-bottom:20px;
+box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+
+input,button{
+padding:10px;
+margin:5px;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:15px;
+}
+
+button{
+background:#007bff;
+color:white;
+border:none;
+cursor:pointer;
+}
+
+button:hover{
+background:#005dc1;
+}
+
+.labels{
+display:grid;
+grid-template-columns:repeat(3, 1fr);
+gap:10px;
+}
+
+.label{
+background:white;
+border:1px solid #ddd;
+padding:8px;
+height:160px;
+text-align:center;
+display:flex;
+flex-direction:column;
+justify-content:space-between;
+border-radius:6px;
+}
+
+.store{
+font-size:14px;
+font-weight:bold;
+}
+
+.product{
+font-size:18px;
+font-weight:bold;
+}
+
+.price{
+font-size:16px;
+color:green;
+font-weight:bold;
+}
+
+.expiry{
+font-size:12px;
+color:#555;
+}
+
+svg{
+max-width:100%;
+height:45px;
+}
+
+@media print{
+.controls{
+display:none;
+}
+body{
+background:white;
+padding:0;
+}
+.labels{
+gap:4mm;
+}
+.label{
+page-break-inside:avoid;
+height:150px;
+}
+}
 </style>
 </head>
 <body>
-<h1>نظام ملصقات المنتجات المتقدم</h1>
 
-<div>
-    <input type="text" id="store" placeholder="اسم المحل">
-    <input type="text" id="name" placeholder="اسم المنتج">
-    <input type="number" id="price" placeholder="السعر بالريال">
-    <input type="number" id="days" placeholder="عدد أيام الصلاحية">
-    <input type="number" id="quantity" placeholder="عدد الملصقات">
-    <button onclick="addProduct()">إضافة المنتج</button>
-    <button onclick="printAll()">طباعة الكل</button>
+<h1>نظام تسعيرة المنتجات</h1>
+
+<div class="controls">
+
+<input id="store" placeholder="اسم المحل">
+
+<input id="name" placeholder="اسم المنتج">
+
+<input id="price" type="number" placeholder="السعر">
+
+<input id="days" type="number" placeholder="عدد أيام الصلاحية">
+
+<input id="qty" type="number" placeholder="عدد الملصقات">
+
+<button onclick="addProduct()">إضافة</button>
+
+<button onclick="window.print()">طباعة الكل</button>
+
 </div>
 
-<h3>قائمة المنتجات الحالية</h3>
-<table>
-    <thead>
-        <tr>
-            <th>اسم المحل</th>
-            <th>المنتج</th>
-            <th>السعر</th>
-            <th>أيام الصلاحية</th>
-            <th>عدد الملصقات</th>
-            <th>أوامر</th>
-        </tr>
-    </thead>
-    <tbody id="productTable"></tbody>
-</table>
-
-<div class="label-sheet" id="labels"></div>
+<div class="labels" id="labels"></div>
 
 <script>
-let products = JSON.parse(localStorage.getItem('products')) || [];
 
-function saveProducts() {
-    localStorage.setItem('products', JSON.stringify(products));
+let products=JSON.parse(localStorage.getItem("products"))||[];
+
+function save(){
+localStorage.setItem("products",JSON.stringify(products));
 }
 
-function addProduct() {
-    const store = document.getElementById('store').value;
-    const name = document.getElementById('name').value;
-    const price = document.getElementById('price').value;
-    const days = parseInt(document.getElementById('days').value);
-    const quantity = parseInt(document.getElementById('quantity').value);
-
-    if (!store || !name || !price || !days || !quantity) {
-        alert('يرجى ملء جميع الحقول');
-        return;
-    }
-
-    const today = new Date();
-    const expiryDate = new Date(today.getTime() + days*24*60*60*1000);
-    const expiryStr = expiryDate.toISOString().split('T')[0];
-
-    const product = { store, name, price, days, expiry: expiryStr, quantity };
-    products.push(product);
-    saveProducts();
-    renderProducts();
-    renderLabels();
+function barcodeCode(index){
+return "PR"+String(index+1).padStart(6,'0');
 }
 
-function deleteProduct(index) {
-    if (confirm('هل تريد حذف هذا المنتج؟')) {
-        products.splice(index, 1);
-        saveProducts();
-        renderProducts();
-        renderLabels();
-    }
+function addProduct(){
+
+let store=document.getElementById("store").value;
+let name=document.getElementById("name").value;
+let price=document.getElementById("price").value;
+let days=parseInt(document.getElementById("days").value);
+let qty=parseInt(document.getElementById("qty").value);
+
+if(!store||!name||!price||!days||!qty){
+alert("أكمل جميع البيانات");
+return;
 }
 
-function renderProducts() {
-    const tbody = document.getElementById('productTable');
-    tbody.innerHTML = '';
-    products.forEach((p, index) => {
-        tbody.innerHTML += `
-            <tr>
-                <td>${p.store}</td>
-                <td>${p.name}</td>
-                <td>${p.price}</td>
-                <td>${p.days}</td>
-                <td>${p.quantity}</td>
-                <td>
-                    <button onclick="deleteProduct(${index})">حذف</button>
-                </td>
-            </tr>
-        `;
-    });
+let d=new Date();
+d.setDate(d.getDate()+days);
+
+let expiry=d.toLocaleDateString('en-CA');
+
+products.push({
+store,
+name,
+price,
+qty,
+expiry
+});
+
+save();
+render();
+
 }
 
-function renderLabels() {
-    const container = document.getElementById('labels');
-    container.innerHTML = '';
-    products.forEach((p, index) => {
-        for (let i=0; i<p.quantity; i++) {
-            const code = Date.now().toString() + Math.floor(Math.random()*1000);
-            const div = document.createElement('div');
-            div.className = 'label';
-            div.innerHTML = `
-                <strong>${p.store}</strong>
-                <strong>${p.name}</strong>
-                <p>${p.price} ريال</p>
-                <p>انتهاء: ${p.expiry}</p>
-                <svg id="barcode${index}${i}"></svg>
-            `;
-            container.appendChild(div);
-            JsBarcode(`#barcode${index}${i}`, code, { format: "CODE128", width: 2, height: 40 });
-        }
-    });
+function render(){
+
+let labels=document.getElementById("labels");
+labels.innerHTML="";
+
+let count=0;
+
+products.forEach((p,index)=>{
+
+for(let i=0;i<p.qty;i++){
+
+let code=barcodeCode(index);
+
+let div=document.createElement("div");
+div.className="label";
+
+div.innerHTML=`
+<div class="store">${p.store}</div>
+<div class="product">${p.name}</div>
+<div class="price">${p.price} ريال</div>
+<div class="expiry">انتهاء: ${p.expiry}</div>
+<svg id="b${count}"></svg>
+`;
+
+labels.appendChild(div);
+
+JsBarcode(`#b${count}`, code,{
+format:"CODE128",
+displayValue:true,
+height:40,
+width:1.6,
+fontSize:12
+});
+
+count++;
+
 }
 
-function printAll() {
-    window.print();
+});
+
 }
 
-// عند فتح الصفحة، نعرض المنتجات المخزنة
-renderProducts();
-renderLabels();
+render();
+
 </script>
+
 </body>
 </html>
