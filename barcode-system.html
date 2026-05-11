@@ -1,3 +1,11 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام تسعيرة وطباعة الملصقات</title>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+
 <style>
 body{
 font-family:Tahoma,Arial;
@@ -17,11 +25,11 @@ box-shadow:0 2px 8px rgba(0,0,0,.1);
 }
 
 input,button{
-padding:8px;
-margin:4px;
-border-radius:6px;
+padding:10px;
+margin:5px;
+border-radius:8px;
 border:1px solid #ccc;
-font-size:14px;
+font-size:15px;
 }
 
 button{
@@ -31,76 +39,251 @@ border:none;
 cursor:pointer;
 }
 
+button:hover{
+background:#005dc1;
+}
+
 .labels{
 display:grid;
-grid-template-columns:repeat(5, 1fr);
-gap:3mm;
+grid-template-columns:repeat(3,1fr);
+gap:10px;
 }
 
 .label{
-width:38mm;
-height:25mm;
 background:white;
 border:1px solid #ddd;
-padding:2mm;
-box-sizing:border-box;
+padding:8px;
+height:160px;
 text-align:center;
 display:flex;
 flex-direction:column;
 justify-content:space-between;
-overflow:hidden;
+border-radius:6px;
 }
 
-.store{
-font-size:8px;
-font-weight:bold;
-line-height:1;
-}
-
-.product{
-font-size:10px;
-font-weight:bold;
-line-height:1.1;
-}
-
-.price{
-font-size:9px;
-font-weight:bold;
-color:green;
-line-height:1;
-}
-
-.expiry{
-font-size:7px;
-line-height:1;
-}
+.store{font-size:14px;font-weight:bold;}
+.product{font-size:18px;font-weight:bold;}
+.price{font-size:16px;color:green;font-weight:bold;}
+.expiry{font-size:12px;color:#555;}
 
 svg{
+max-width:100%;
+height:45px;
+}
+
+.table-box{
+margin-top:20px;
+background:white;
+padding:15px;
+border-radius:10px;
+}
+
+table{
 width:100%;
-height:10mm;
+border-collapse:collapse;
+}
+
+th,td{
+border:1px solid #ddd;
+padding:8px;
+text-align:center;
 }
 
 @media print{
-
 .controls,.table-box{
 display:none;
 }
-
 body{
 padding:0;
 background:white;
 }
-
-.labels{
-grid-template-columns:repeat(5, 1fr);
-gap:2mm;
-}
-
-.label{
-width:38mm;
-height:25mm;
-page-break-inside:avoid;
-}
-
 }
 </style>
+</head>
+<body>
+
+<h1>نظام تسعيرة المنتجات</h1>
+
+<div class="controls">
+
+<input id="store" placeholder="اسم المحل">
+<input id="name" placeholder="اسم المنتج">
+<input id="price" type="number" placeholder="السعر">
+<input id="days" type="number" placeholder="عدد أيام الصلاحية">
+<input id="qty" type="number" placeholder="عدد الملصقات">
+
+<button onclick="addProduct()">إضافة</button>
+<button onclick="window.print()">طباعة الكل</button>
+<button onclick="exportCSV()">تصدير Excel</button>
+
+</div>
+
+<div class="table-box">
+<h3>قائمة المنتجات</h3>
+<table>
+<thead>
+<tr>
+<th>المنتج</th>
+<th>السعر</th>
+<th>العدد</th>
+<th>التحكم</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+</div>
+
+<div class="labels" id="labels"></div>
+
+<script>
+
+let products=JSON.parse(localStorage.getItem("products"))||[];
+let editIndex=null;
+
+function save(){
+localStorage.setItem("products",JSON.stringify(products));
+}
+
+function barcodeCode(index){
+return "PR"+String(index+1).padStart(6,'0');
+}
+
+function addProduct(){
+
+let store=document.getElementById("store").value;
+let name=document.getElementById("name").value;
+let price=document.getElementById("price").value;
+let days=parseInt(document.getElementById("days").value);
+let qty=parseInt(document.getElementById("qty").value);
+
+if(!store||!name||!price||!days||!qty){
+alert("أكمل جميع البيانات");
+return;
+}
+
+let d=new Date();
+d.setDate(d.getDate()+days);
+
+let expiry=d.toLocaleDateString('en-CA');
+
+let item={
+store,
+name,
+price,
+qty,
+days,
+expiry
+};
+
+if(editIndex===null){
+products.push(item);
+}else{
+products[editIndex]=item;
+editIndex=null;
+}
+
+document.querySelectorAll("input").forEach(i=>i.value="");
+
+save();
+render();
+}
+
+function editProduct(i){
+
+let p=products[i];
+
+document.getElementById("store").value=p.store;
+document.getElementById("name").value=p.name;
+document.getElementById("price").value=p.price;
+document.getElementById("days").value=p.days;
+document.getElementById("qty").value=p.qty;
+
+editIndex=i;
+}
+
+function deleteProduct(i){
+
+if(confirm("حذف المنتج؟")){
+products.splice(i,1);
+save();
+render();
+}
+
+}
+
+function exportCSV(){
+
+let csv="اسم المحل,المنتج,السعر,تاريخ الانتهاء,العدد\n";
+
+products.forEach(p=>{
+csv+=`${p.store},${p.name},${p.price},${p.expiry},${p.qty}\n`;
+});
+
+let blob=new Blob([csv],{type:"text/csv"});
+let a=document.createElement("a");
+a.href=URL.createObjectURL(blob);
+a.download="products.csv";
+a.click();
+}
+
+function render(){
+
+let labels=document.getElementById("labels");
+let table=document.getElementById("tableBody");
+
+labels.innerHTML="";
+table.innerHTML="";
+
+let count=0;
+
+products.forEach((p,index)=>{
+
+table.innerHTML+=`
+<tr>
+<td>${p.name}</td>
+<td>${p.price}</td>
+<td>${p.qty}</td>
+<td>
+<button onclick="editProduct(${index})">تعديل</button>
+<button onclick="deleteProduct(${index})">حذف</button>
+</td>
+</tr>
+`;
+
+for(let i=0;i<p.qty;i++){
+
+let code=barcodeCode(index);
+
+let div=document.createElement("div");
+div.className="label";
+
+div.innerHTML=`
+<div class="store">${p.store}</div>
+<div class="product">${p.name}</div>
+<div class="price">${p.price} ريال</div>
+<div class="expiry">انتهاء: ${p.expiry}</div>
+<svg id="b${count}"></svg>
+`;
+
+labels.appendChild(div);
+
+JsBarcode(`#b${count}`,code,{
+format:"CODE128",
+displayValue:true,
+height:40,
+width:1.6
+});
+
+count++;
+
+}
+
+});
+
+}
+
+render();
+
+</script>
+</body>
+</html>
