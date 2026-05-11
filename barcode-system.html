@@ -1,138 +1,77 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صفحة التسعيرة - ألبان أم ماجد</title>
-    <!-- استيراد خط تجول الحديث -->
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #2c3e50; /* لون كحلي وقور */
-            --accent-color: #27ae60;  /* لون أخضر للأسعار والواتساب */
-            --bg-color: #f4f7f6;
-            --white: #ffffff;
-        }
-
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        header {
-            background-color: var(--primary-color);
-            color: var(--white);
-            width: 100%;
-            padding: 30px 0;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        header h1 { margin: 0; font-size: 28px; }
-        header p { margin: 5px 0 0; opacity: 0.8; }
-
-        .container {
-            max-width: 1000px;
-            width: 90%;
-            margin: 40px auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        .card {
-            background: var(--white);
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid #eee;
-        }
-
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        }
-
-        .card h2 {
-            color: var(--primary-color);
-            margin-bottom: 15px;
-            font-size: 24px;
-        }
-
-        .price {
-            font-size: 32px;
-            color: var(--accent-color);
-            font-weight: bold;
-            margin: 20px 0;
-        }
-
-        .price span { font-size: 16px; color: #777; }
-
-        .order-btn {
-            display: inline-block;
-            background-color: var(--accent-color);
-            color: var(--white);
-            text-decoration: none;
-            padding: 12px 25px;
-            border-radius: 50px;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-
-        .order-btn:hover {
-            background-color: #219150;
-        }
-
-        footer {
-            margin-top: auto;
-            padding: 40px 0;
-            text-align: center;
-            color: #666;
-        }
-
-        .signature {
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-top: 10px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ملصقات المنتجات</title>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+    h1 { text-align: center; }
+    input, button { padding: 5px; margin: 5px; }
+    .label-sheet { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    .label { width: 180px; height: 100px; border: 1px solid #ccc; padding: 5px; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .label svg { margin-top: 5px; }
+    @media print {
+        body { background: #fff; }
+        .label-sheet { gap: 5px; }
+        .label { page-break-inside: avoid; }
+        input, button { display: none; }
+    }
+</style>
 </head>
 <body>
+<h1>نظام ملصقات المنتجات</h1>
 
-    <header>
-        <h1>ألبان أم ماجد</h1>
-        <p>جودة وطعم يستحق الثقة</p>
-    </header>
+<div>
+    <input type="text" id="name" placeholder="اسم المنتج">
+    <input type="number" id="price" placeholder="السعر بالريال">
+    <input type="date" id="expiry">
+    <button onclick="addProduct()">إضافة المنتج</button>
+    <button onclick="printAll()">طباعة الكل</button>
+</div>
 
-    <div class="container">
-        <!-- منتج الحليب الصغير -->
-        <div class="card">
-            <h2>حليب (صغير)</h2>
-            <div class="price">5 <span>ريال</span></div>
-            <!-- استبدل رقم الهاتف برقمك الفعلي -->
-            <a href="https://wa.me/966XXXXXXXXX?text=أرغب%20في%20طلب%20حليب%20صغير" class="order-btn">اطلب عبر الواتساب</a>
-        </div>
+<div class="label-sheet" id="labels"></div>
 
-        <!-- منتج الحليب الكبير -->
-        <div class="card">
-            <h2>حليب (كبير)</h2>
-            <div class="price">10 <span>ريال</span></div>
-            <!-- استبدل رقم الهاتف برقمك الفعلي -->
-            <a href="https://wa.me/966XXXXXXXXX?text=أرغب%20في%20طلب%20حليب%20كبير" class="order-btn">اطلب عبر الواتساب</a>
-        </div>
-    </div>
+<script>
+let products = [];
 
-    <footer>
-        <p>نسعد بخدمتكم دائماً</p>
-        <div class="signature">شكراً لتعاملكم معنا، أم ماجد</div>
-    </footer>
+function addProduct() {
+    const name = document.getElementById('name').value;
+    const price = document.getElementById('price').value;
+    const expiry = document.getElementById('expiry').value;
 
+    if (!name || !price || !expiry) {
+        alert('يرجى ملء جميع الحقول');
+        return;
+    }
+
+    const code = Date.now().toString();
+    const product = { name, price, expiry, code };
+    products.push(product);
+    renderLabels();
+}
+
+function renderLabels() {
+    const container = document.getElementById('labels');
+    container.innerHTML = '';
+    products.forEach((p, index) => {
+        const div = document.createElement('div');
+        div.className = 'label';
+        div.innerHTML = `
+            <strong>${p.name}</strong>
+            <p>${p.price} ريال</p>
+            <p>انتهاء: ${p.expiry}</p>
+            <svg id="barcode${index}"></svg>
+        `;
+        container.appendChild(div);
+        JsBarcode(`#barcode${index}`, p.code, { format: "CODE128", width: 2, height: 40 });
+    });
+}
+
+function printAll() {
+    window.print();
+}
+</script>
 </body>
 </html>
