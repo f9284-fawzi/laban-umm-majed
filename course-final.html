@@ -1,203 +1,455 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>دورة الذكاء العاطفي</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دورة اجتياز الرخصة المهنية للمعلم</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #16a085;
+            --accent-color: #e74c3c;
+            --bg-color: #f8f9fa;
+            --text-color: #333;
+        }
 
-<style>
-body {
-    font-family: 'Tahoma';
-    background: #eef2f7;
-    margin: 0;
-}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.8;
+        }
 
-.header {
-    background: #1a237e;
-    color: white;
-    padding: 20px;
-    text-align: center;
-}
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
 
-.container {
-    max-width: 900px;
-    margin: 20px auto;
-    background: white;
-    padding: 25px;
-    border-radius: 10px;
-}
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
 
-h2 {
-    color: #1a237e;
-}
+        header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+        }
 
-input {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-}
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
 
-button {
-    background: #1a237e;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
 
-.certificate {
-    display: none;
-    margin-top: 30px;
-    border: 6px double #000;
-    padding: 40px;
-    text-align: center;
-    background: #fff;
-}
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
 
-.pass { color: green; font-weight: bold; }
-.fail { color: red; font-weight: bold; }
+        /* قسم البيانات */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
 
-.footer {
-    margin-top: 40px;
-    display: flex;
-    justify-content: space-between;
-}
-</style>
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
 
+        input[type="text"], input[type="tel"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        /* المحتوى التعليمي */
+        .content-section p {
+            text-align: justify;
+        }
+
+        .highlight {
+            background-color: #e8f8f5;
+            border-right: 4px solid var(--secondary-color);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* الأسئلة */
+        .question {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .question:last-child {
+            border-bottom: none;
+        }
+
+        .options label {
+            display: block;
+            background: #f9f9f9;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: normal;
+        }
+
+        .options label:hover {
+            background: #e2f0d9;
+            border-color: var(--secondary-color);
+        }
+
+        .options input[type="radio"] {
+            margin-left: 10px;
+        }
+
+        /* الأزرار */
+        .btn {
+            display: block;
+            width: 100%;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #117a65;
+        }
+
+        /* النتيجة والشهادة */
+        #result-box {
+            display: none;
+            text-align: center;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* تصميم الشهادة */
+        #certificate {
+            display: none;
+            border: 10px double var(--primary-color);
+            padding: 3rem;
+            background: #fffbf2;
+            position: relative;
+            margin-top: 2rem;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        #certificate h2 {
+            font-size: 2.5rem;
+            color: #b38600;
+            border: none;
+            margin-bottom: 1rem;
+        }
+
+        .cert-text {
+            font-size: 1.2rem;
+            margin: 2rem 0;
+        }
+
+        .cert-data {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            text-decoration: underline;
+        }
+
+        .cert-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            font-weight: bold;
+        }
+
+        .print-btn {
+            background-color: var(--primary-color);
+            margin-top: 1rem;
+        }
+
+        /* التكيف مع الطباعة */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #certificate, #certificate * {
+                visibility: visible;
+            }
+            #certificate {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                box-shadow: none;
+                border: 10px double #000;
+            }
+            .print-btn {
+                display: none;
+            }
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="header">
-    <h1>منصة التدريب التربوي</h1>
-    <p>دورة الذكاء العاطفي للمعلمين</p>
-</div>
+<header>
+    <h1>دورة التميز لاجتياز الرخصة المهنية للمعلمين</h1>
+    <p>تأهيل تربوي وتخصصي متكامل وفق معايير هيئة تقويم التعليم والتدريب</p>
+</header>
 
 <div class="container">
-
-<h2>📘 محتوى الدورة</h2>
-
-<p>
-الذكاء العاطفي هو قدرة المعلم على فهم مشاعره وتنظيمها
-والتعامل مع الطلاب بطريقة إيجابية داخل البيئة التعليمية.
-</p>
-
-<ul>
-<li>إدارة المشاعر داخل الصف</li>
-<li>التعاطف مع الطلاب</li>
-<li>حل المشكلات السلوكية</li>
-</ul>
-
-<hr>
-
-<h2>📝 بيانات المتدرب</h2>
-<input type="text" id="name" placeholder="الاسم الكامل">
-<input type="text" id="major" placeholder="التخصص">
-
-<hr>
-
-<h2>📋 الاختبار</h2>
-
-<p>1- الذكاء العاطفي يساعد على إدارة الصف؟</p>
-<input type="radio" name="q1" value="صح"> صح
-<input type="radio" name="q1" value="خطأ"> خطأ
-
-<p>2- من مهارات الذكاء العاطفي:</p>
-<input type="radio" name="q2" value="التعاطف"> التعاطف
-<input type="radio" name="q2" value="الغضب"> الغضب
-
-<p>3- المعلم الناجح يتجاهل مشاعر الطلاب:</p>
-<input type="radio" name="q3" value="صح"> صح
-<input type="radio" name="q3" value="خطأ"> خطأ
-
-<br><br>
-
-<button onclick="submitTest()">إنهاء الاختبار</button>
-
-<p id="result"></p>
-
-<div class="certificate" id="certificate">
-
-    <img src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Ministry_of_Education_Saudi_Arabia_Logo.svg" 
-    style="width:120px; margin-bottom:15px;">
-
-    <p style="font-size:14px; color:gray;">
-وزارة التعليم - المملكة العربية السعودية
-</p>
-
-    <h2>🎓 شهادة إتمام دورة</h2>
-
-    <p><b>متوسطة ابن القيم</b></p>
-
-    <p>تشهد بأن</p>
-    <h2 id="certName"></h2>
-
-    <p>تخصص: <span id="certMajor"></span></p>
-
-    <p>قد أتم دورة <b>الذكاء العاطفي للمعلمين</b></p>
-
-    <p>بتقدير: <span id="grade"></span></p>
-
-    <div class="footer">
-        <div>
-            <p>مدير المدرسة</p>
-            <p><b>عبدالسلام بن حمدان العلي</b></p>
-        </div>
-
-        <div>
-            <p>التاريخ</p>
-            <p id="date"></p>
-        </div>
+    
+    <!-- أولاً: نموذج بيانات المعلم -->
+    <div class="card" id="profile-section">
+        <h2>بيانات المعلم المتدرب</h2>
+        <form id="user-form">
+            <div class="form-group">
+                <label for="teacher-name">اسم المعلم الثلاثي:</label>
+                <input type="text" id="teacher-name" required placeholder="أدخل اسمك الكامل">
+            </div>
+            <div class="form-group">
+                <label for="national-id">السجل المدني (الهوية الوطنية):</label>
+                <input type="text" id="national-id" pattern="\d{10}" title="يجب أن يتكون السجل المدني من 10 أرقام" required placeholder="أدخل 10 أرقام">
+            </div>
+            <div class="form-group">
+                <label for="phone-number">رقم الجوال:</label>
+                <input type="tel" id="phone-number" pattern="05\d{8}" title="يجب أن يبدأ برقم 05 ويتكون من 10 أرقام" required placeholder="05xxxxxxxx">
+            </div>
+        </form>
     </div>
 
-    <br>
-    <button onclick="window.print()">🖨️ طباعة الشهادة</button>
+    <!-- ثانياً: المحتوى النصي للدورة -->
+    <div class="card content-section" id="course-content">
+        <h2>المحتوى المعرفي للدورة</h2>
+        <p>مرحباً بك زميلنا المعلم/المعلمة في هذا الملخص السريع لأهم ركائز اختبار الرخصة المهنية (القسم التربوي العام). يركز الاختبار على ثلاثة مجالات رئيسية:</p>
+        
+        <div class="highlight">
+            <strong>1. القيم والمسؤوليات المهنية:</strong> التزام المعلم بالهوية الوطنية، وأخلاقيات المهنة، والتطوير المهني المستمر المستند إلى المعايير.
+        </div>
+        
+        <div class="highlight">
+            <strong>2. المعرفة المهنية:</strong> الإلمام بخصائص النمو لدى الطلاب، وكيفية تلبية احتياجات الفروق الفردية، ومعرفة طرق التدريس العامة والتقويم.
+        </div>
 
-</div>
+        <div class="highlight">
+            <strong>3. الممارسة المهنية:</strong> التخطيط الفعال للدروس، تهيئة بيئات تعلم تفاعلية وآمنة للطلاب، وتطبيق أدوات تقويم متنوعة لقياس نواتج التعلم بدقة.
+        </div>
+        
+        <p><strong>تذكر دائماً:</strong> التغذية الراجعة الإيجابية والفورية تعزز من دافعية الطلاب، والتقويم التكويني (البنائي) يستهدف تجويد عملية التعلم أثناء حدوثها، وليس مجرد رصد الدرجات.</p>
+    </div>
+
+    <!-- ثالثاً: الاختبار -->
+    <div class="card" id="quiz-section">
+        <h2>اختبار نهاية الدورة</h2>
+        <p style="color: var(--accent-color); font-weight: bold;">ملاحظة: يتطلب اجتياز الدورة والحصول على الشهادة تحقيق نسبة 60% أو أعلى (الإجابة الصحيحة على 3 أسئلة على الأقل من أصل 5).</p>
+        
+        <form id="quiz-form">
+            <!-- السؤال 1 -->
+            <div class="question">
+                <p><strong>السؤال 1:</strong> أي من أنواع التقويم التالية يُستخدم للوقوف على سير تقدم الطالب أثناء العملية التعليمية وتعديل مسار التدريس؟</p>
+                <div class="options">
+                    <label><input type="radio" name="q1" value="A"> أ) التقويم القبلي (التمهيدي)</label>
+                    <label><input type="radio" name="q1" value="B"> ب) التقويم البنائي (التكويني)</label>
+                    <label><input type="radio" name="q1" value="C"> ج) التقويم الختامي (النهائي)</label>
+                    <label><input type="radio" name="q1" value="D"> د) التقويم التشخيصي</label>
+                </div>
+            </div>
+
+            <!-- السؤال 2 -->
+            <div class="question">
+                <p><strong>السؤال 2:</strong> عندما يراعي المعلم أن من طلابه من يتعلم بالبصر، ومنهم بالسمع، ومنهم بالحركة، فهو يطبق نظرية:</p>
+                <div class="options">
+                    <label><input type="radio" name="q2" value="A"> أ) الذكاءات المتعددة</label>
+                    <label><input type="radio" name="q2" value="B"> ب) الاشتراط الإجرائي</label>
+                    <label><input type="radio" name="q2" value="C"> ج) التعلم بالاكتشاف</label>
+                    <label><input type="radio" name="q2" value="D"> د) التحليل النفسي</label>
+                </div>
+            </div>
+
+            <!-- السؤال 3 -->
+            <div class="question">
+                <p><strong>السؤال 3:</strong> تهدف عملية "التغذية الراجعة" في البيئة الصفية بشكل أساسي إلى:</p>
+                <div class="options">
+                    <label><input type="radio" name="q3" value="A"> أ) معاقبة الطلاب المقصرين</label>
+                    <label><input type="radio" name="q3" value="B"> ب) ترتيب الطلاب تنازلياً حسب درجاتهم</label>
+                    <label><input type="radio" name="q3" value="C"> ج) توجيه الطالب وتعديل أدائه وتطوير تعلمه</label>
+                    <label><input type="radio" name="q3" value="D"> د) إنهاء المنهج الدراسي في الوقت المحدد</label>
+                </div>
+            </div>
+
+            <!-- السؤال 4 -->
+            <div class="question">
+                <p><strong>السؤال 4:</strong> من أهم شروط صياغة الأهداف السلوكية الإجرائية أن تكون:</p>
+                <div class="options">
+                    <label><input type="radio" name="q4" value="A"> أ) عامة وشاملة لكل مجالات المادة</label>
+                    <label><input type="radio" name="q4" value="B"> ب) تركز على نشاط المعلم فقط</label>
+                    <label><input type="radio" name="q4" value="C"> ج) صعبة التقييم لقياس التحدي</label>
+                    <label><input type="radio" name="q4" value="D"> د) محددة وقابلة للقياس والملاحظة</label>
+                </div>
+            </div>
+
+            <!-- السؤال 5 -->
+            <div class="question">
+                <p><strong>السؤال 5:</strong> أي العبارات التالية تمثل التزاماً بأخلاقيات مهنة التعليم؟</p>
+                <div class="options">
+                    <label><input type="radio" name="q5" value="A"> أ) مناقشة خصوصيات الطلاب ومشكلاتهم مع زملائهم بالصف</label>
+                    <label><input type="radio" name="q5" value="B"> ب) التعامل مع جميع الطلاب بعدالة ومساواة ودون تمييز</label>
+                    <label><input type="radio" name="q5" value="C"> ج) تقديم الدروس الخصوصية المدفوعة لطلاب المدرسة</label>
+                    <label><input type="radio" name="q5" value="D"> د) التركيز على الطلاب المتفوقين فقط وإهمال البقية</label>
+                </div>
+            </div>
+
+            <button type="button" class="btn" onclick="evaluateQuiz()">إرسال الإجابات واستخراج النتيجة</button>
+        </form>
+    </div>
+
+    <!-- رابعاً: صندوق النتيجة والشهادة -->
+    <div class="card" id="result-box">
+        <div id="result-message"></div>
+        
+        <!-- قالب الشهادة -->
+        <div id="certificate">
+            <h2>شهادة اجتياز دورة تدريبية</h2>
+            <p>تشهد منصة التدريب التربوي بأن المعلم / المعلمة:</p>
+            <p class="cert-data" id="cert-name"></p>
+            <p>صاحب السجل المدني رقم: <span id="cert-id" style="font-weight:bold;"></span></p>
+            <p>قد اجتاز بنجاح الدورة التأهيلية بعنوان:</p>
+            <h3>« اجتياز اختبار الرخصة المهنية للمعلمين »</h3>
+            <p>بعد حصوله على نسبة اجتياز: <span id="cert-score" style="font-weight:bold;"></span></p>
+            
+            <div class="cert-footer">
+                <div>تاريخ الاجتياز: <span id="cert-date"></span></div>
+                <div>ختم وتوقيع إدارة التدريب</div>
+            </div>
+            
+            <button class="btn print-btn" onclick="window.print()">طباعة الشهادة وحفظها PDF</button>
+        </div>
+    </div>
 
 </div>
 
 <script>
+    // الإجابات النموذجية الصحيحة لـ 5 أسئلة
+    const correctAnswers = {
+        q1: 'B',
+        q2: 'A',
+        q3: 'C',
+        q4: 'D',
+        q5: 'B'
+    };
 
-function submitTest() {
+    function evaluateQuiz() {
+        // 1. التحقق من إدخال البيانات الشخصية أولاً
+        const name = document.getElementById('teacher-name').value.trim();
+        const nationalId = document.getElementById('national-id').value.trim();
+        const phone = document.getElementById('phone-number').value.trim();
+        const userForm = document.getElementById('user-form');
 
-    let name = document.getElementById("name").value;
-    let major = document.getElementById("major").value;
+        if (!userForm.checkValidity() || name === "" || nationalId === "" || phone === "") {
+            alert("فضلاً، قم بتعبئة بيانات المعلم (الاسم، السجل المدني 10 أرقام، الجوال يبدأ بـ 05) بشكل صحيح قبل إرسال الاختبار.");
+            document.getElementById('profile-section').scrollIntoView({ behavior: 'smooth' });
+            return;
+        }
 
-    if(name === "" || major === "") {
-        alert("اكتب بياناتك أولاً");
-        return;
+        // 2. حساب الدرجة
+        const form = document.getElementById('quiz-form');
+        let score = 0;
+        let totalQuestions = 5;
+
+        for (let key in correctAnswers) {
+            const selected = form.querySelector(`input[name="${key}"]:checked`);
+            if (selected && selected.value === correctAnswers[key]) {
+                score++;
+            }
+        }
+
+        // حساب النسبة المئوية
+        let percentage = (score / totalQuestions) * 100;
+
+        // 3. إظهار النتيجة والشهادة
+        const resultBox = document.getElementById('result-box');
+        const resultMessage = document.getElementById('result-message');
+        const certificate = document.getElementById('certificate');
+
+        resultBox.style.display = 'block';
+
+        if (percentage >= 60) {
+            // ناجح المؤهل للشهادة
+            resultMessage.innerHTML = `
+                <div class="alert alert-success">
+                    مبارك النجاح! لقد اجتزت الاختبار بنسبة ${percentage}% (${score} من ${totalQuestions} إجابات صحيحة).
+                </div>
+                <p>تم إصدار شهادتك بنجاح، يمكنك مشاهدتها وطباعتها أدناه.</p>
+            `;
+            
+            // تعبئة بيانات الشهادة
+            document.getElementById('cert-name').innerText = name;
+            document.getElementById('cert-id').innerText = nationalId;
+            document.getElementById('cert-score').innerText = percentage + '%';
+            
+            // وضع تاريخ اليوم بالتقويم الحالي
+            const today = new Date();
+            document.getElementById('cert-date').innerText = today.toLocaleDateString('ar-SA');
+            
+            certificate.style.display = 'block';
+        } else {
+            // رoriginal لم يجتز النسبة المطلوب
+            resultMessage.innerHTML = `
+                <div class="alert alert-danger">
+                    لم يتم اجتياز النسبة المطلوبة. نسبتك الحالية هي ${percentage}% (${score} من ${totalQuestions} إجابات صحيحة).
+                </div>
+                <p>شروط منح الشهادة هي الحصول على 60% على الأقل. فضلاً راجع المحتوى المعرفي وأعد المحاولة مرة أخرى.</p>
+            `;
+            certificate.style.display = 'none';
+        }
+
+        // الانتقال التلقائي لصندوق النتيجة
+        resultBox.scrollIntoView({ behavior: 'smooth' });
     }
-
-    let score = 0;
-
-    if(document.querySelector('input[name="q1"]:checked')?.value === "صح") score++;
-    if(document.querySelector('input[name="q2"]:checked')?.value === "التعاطف") score++;
-    if(document.querySelector('input[name="q3"]:checked')?.value === "خطأ") score++;
-
-    let percentage = (score / 3) * 100;
-
-    let resultText = document.getElementById("result");
-
-    if(percentage >= 70) {
-        resultText.innerHTML = "✔️ ناجح بنسبة " + percentage + "%";
-        resultText.className = "pass";
-
-        document.getElementById("certName").innerText = name;
-        document.getElementById("certMajor").innerText = major;
-        document.getElementById("grade").innerText = percentage + "%";
-
-        let today = new Date().toLocaleDateString('ar-EG');
-        document.getElementById("date").innerText = today;
-
-        document.getElementById("certificate").style.display = "block";
-
-    } else {
-        resultText.innerHTML = "❌ راسب، حاول مرة أخرى";
-        resultText.className = "fail";
-    }
-}
-
 </script>
 
 </body>
