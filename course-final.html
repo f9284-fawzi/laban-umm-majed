@@ -85,7 +85,7 @@
             </nav>
 
             <div class="p-4 border-t border-emerald-700 text-center text-xs text-emerald-300">
-                برنامج إدارة ألبان أم ماجد v1.2
+                برنامج إدارة ألبان أم ماجد v1.3
             </div>
         </aside>
 
@@ -348,7 +348,7 @@
                                 <img src="logo.png" alt="شعار ألبان أم ماجد" class="max-w-full max-h-full object-contain" onerror="this.outerHTML='<i class=&quot;fa-solid fa-cow text-3xl text-emerald-800&quot;></i>'">
                             </div>
                             <div>
-                                <h2 class="text-2xl font-black text-emerald-800">ألبان أم ماجد البلدية</h2>
+                                <h2 class="text-2xl font-black text-emerald-800">ألبان أم ماجد</h2>
                                 <p class="text-sm text-gray-500 mt-1">كشف حساب مالي تفصيلي لمبيعات ومصروفات الألبان</p>
                             </div>
                         </div>
@@ -450,6 +450,11 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">رقم التشغيلة / رقم الدفعة (مثلاً: B1)</label>
                                 <input type="text" id="label-batch" value="B1" placeholder="مثال: B1" oninput="updateLabelPreview()" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                             </div>
+                            <!-- الحقل الجديد لتحديد عدد الملصقات للطباعة دفعة واحدة -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">عدد الملصقات المطلوب طباعتها (الكمية)</label>
+                                <input type="number" id="label-print-qty" value="1" min="1" max="100" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
                             
                             <div class="pt-2">
                                 <button onclick="printStickerLabel()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
@@ -474,8 +479,8 @@
                                     <img src="logo.png" alt="شعار" class="max-w-full max-h-full object-contain rounded-full" onerror="this.outerHTML='<i class=&quot;fa-solid fa-cow text-emerald-800 text-xl&quot;></i>'">
                                 </div>
                                 <div class="text-right">
-                                    <h4 class="text-sm font-black text-emerald-800 leading-tight">ألبان أم ماجد البلدية</h4>
-                                    <p class="text-[9px] text-gray-500">طبيعي وطازج 100% بلدية</p>
+                                    <h4 class="text-sm font-black text-emerald-800 leading-tight">ألبان أم ماجد</h4>
+                                    <p class="text-[9px] text-gray-500">طبيعي وطازج 100%</p>
                                 </div>
                             </div>
                             
@@ -592,10 +597,15 @@
 
     <!-- كود الجافا سكريبت لتفعيل لوحة التحكم، العمليات الحسابية، وقواعد البيانات المصغرة -->
     <script>
-        // تعريف المنتجات الافتراضية إذا كانت قاعدة البيانات فارغة
+        // تعريف المنتجات الافتراضية المحسنة لتشمل المزيد من الخيارات المفيدة والمنوعة لألبان أم ماجد
         const defaultProducts = [
             { id: 1, name: 'لبن صغير', price: 5 },
-            { id: 2, name: 'لبن كبير', price: 10 }
+            { id: 2, name: 'لبن كبير', price: 10 },
+            { id: 3, name: 'حليب طازج (1 لتر)', price: 8 },
+            { id: 4, name: 'حليب طازج (2 لتر)', price: 15 },
+            { id: 5, name: 'سمن بري فاخر', price: 50 },
+            { id: 6, name: 'زبدة طازجة (ربع كيلو)', price: 15 },
+            { id: 7, name: 'قشطة بلدية طازجة', price: 10 }
         ];
 
         // تهيئة قواعد البيانات من المتصفح (Local Storage)
@@ -659,7 +669,7 @@
             // تعديل العنوان الرئيسي للشاشة
             const titles = {
                 'dashboard': 'لوحة التحكم الرئيسية والإحصائيات',
-                'sales': 'تسجيل عمليات بيع ألبان جديدة',
+                'sales': 'تسجيل عمليات بيع جديدة',
                 'expenses': 'تسجيل وإدارة المصروفات التشغيلية',
                 'reports': 'التقارير المالية والفوترة التفصيلية',
                 'labels': 'طباعة ملصقات المنتجات وتواريخ الصلاحية والباركود',
@@ -1129,7 +1139,7 @@
             }
         }
 
-        // دالة طباعة الملصق الحراري بفتح نافذة منبثقة معزولة ونظيفة ومصممة لمقاس الاستيكرات الحرارية
+        // دالة طباعة الملصق الحراري بفتح نافذة منبثقة معزولة ونظيفة ومصممة لمقاس الاستيكرات الحرارية مع دعم تكرار الطباعة بالعدد المختار
         function printStickerLabel() {
             const pSelect = document.getElementById('label-product-select');
             if(!pSelect || !pSelect.value) return;
@@ -1145,6 +1155,9 @@
             const batch = document.getElementById('lbl-sticker-batch').innerText;
             const barcodeSVG = document.getElementById('label-barcode').outerHTML;
             const barcodeText = document.getElementById('lbl-barcode-text').innerText;
+            
+            // قراءة كمية الملصقات المطلوب طباعتها
+            const printQty = parseInt(document.getElementById('label-print-qty').value) || 1;
 
             // فتح نافذة طباعة مخصصة لإعداد الطابعة الحرارية ملصقات 58 مم أو 80 مم
             const printWindow = window.open('', '_blank', 'width=380,height=500');
@@ -1165,7 +1178,7 @@
                         padding: 12px;
                         border-radius: 8px;
                         max-width: 280px;
-                        margin: 0 auto;
+                        margin: 0 auto 15px auto;
                         box-sizing: border-box;
                     }
                     .header-box {
@@ -1257,45 +1270,56 @@
                         .sticker-wrapper {
                             border: none;
                             padding: 2px;
+                            margin-bottom: 0;
+                            page-break-after: always; /* يجعل كل ملصق يطبع في كرت/صفحة مستقلة */
+                        }
+                        .sticker-wrapper:last-child {
+                            page-break-after: avoid; /* يمنع خروج ملصق فارغ في النهاية */
                         }
                     }
                 </style>
             `;
 
             printWindow.document.write('<html><head><title>طباعة ملصق ألبان أم ماجد</title>' + styles + '</head><body>');
-            printWindow.document.write('<div class="sticker-wrapper">');
-            printWindow.document.write(`
-                <div class="header-box">
-                    <div style="font-size: 20px; color: #065f46;"><i class="fa-solid fa-cow"></i></div>
-                    <div>
-                        <h4 class="header-title-main">ألبان أم ماجد البلدية</h4>
-                        <p class="header-sub-main">طبيعي وطازج 100% بلدية</p>
+            
+            // تكرار إنشاء الملصقات بناءً على العدد الذي حدده المستخدم
+            for (let i = 0; i < printQty; i++) {
+                printWindow.document.write('<div class="sticker-wrapper">');
+                printWindow.document.write(`
+                    <div class="header-box">
+                        <div style="font-size: 20px; color: #065f46;"><i class="fa-solid fa-cow"></i></div>
+                        <div>
+                            <h4 class="header-title-main">ألبان أم ماجد</h4>
+                            <p class="header-sub-main">طبيعي وطازج 100%</p>
+                        </div>
                     </div>
-                </div>
-                <div class="dash-divider">
-                    <h2 class="product-title">${pName}</h2>
-                    <p class="product-price">السعر: ${price} ريال سعودي</p>
-                </div>
-                <div class="dates-grid-box">
-                    <div>
-                        <span class="date-title-lbl">تاريخ الإنتاج:</span>
-                        <span class="date-val-bold">${prodDate}</span>
+                    <div class="dash-divider">
+                        <h2 class="product-title">${pName}</h2>
+                        <p class="product-price">السعر: ${price} ريال سعودي</p>
                     </div>
-                    <div>
-                        <span class="date-title-lbl">تاريخ الانتهاء:</span>
-                        <span class="exp-val-red">${expDate}</span>
+                    <div class="dates-grid-box">
+                        <div>
+                            <span class="date-title-lbl">تاريخ الإنتاج:</span>
+                            <span class="date-val-bold">${prodDate}</span>
+                        </div>
+                        <div>
+                            <span class="date-title-lbl">تاريخ الانتهاء:</span>
+                            <span class="exp-val-red">${expDate}</span>
+                        </div>
                     </div>
-                </div>
-                <div style="text-align: center; font-size: 9px; margin-bottom: 6px;">
-                    <span style="color: #9ca3af;">رقم الدفعة:</span> <span class="date-val-bold">${batch}</span>
-                </div>
-                <div class="barcode-box-sticker">
-                    ${barcodeSVG}
-                    <div class="barcode-text-display">${barcodeText}</div>
-                </div>
-                <div class="footer-note-sticker">شكراً لتعاملكم معنا ،، أم ماجد</div>
-            `);
-            printWindow.document.write('</div></body></html>');
+                    <div style="text-align: center; font-size: 9px; margin-bottom: 6px;">
+                        <span style="color: #9ca3af;">رقم الدفعة:</span> <span class="date-val-bold">${batch}</span>
+                    </div>
+                    <div class="barcode-box-sticker">
+                        ${barcodeSVG}
+                        <div class="barcode-text-display">${barcodeText}</div>
+                    </div>
+                    <div class="footer-note-sticker">شكراً لتعاملكم معنا ،، أم ماجد</div>
+                `);
+                printWindow.document.write('</div>');
+            }
+            
+            printWindow.document.write('</body></html>');
             printWindow.document.close();
             printWindow.focus();
 
