@@ -3,454 +3,1044 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دورة اجتياز الرخصة المهنية للمعلم</title>
+    <title>نظام مبيعات ألبان أم ماجد</title>
+    <!-- Tailwind CSS للواجهات الأنيقة والسريعة -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- خطوط جوجل الجميلة - خط تجول -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- أيقونات FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <!-- مكتبة Chart.js للرسومات البيانية -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #16a085;
-            --accent-color: #e74c3c;
-            --bg-color: #f8f9fa;
-            --text-color: #333;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-            line-height: 1.8;
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f4f6f9;
         }
-
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            text-align: center;
-            padding: 2rem 1rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 2rem;
-        }
-
-        header p {
-            margin: 0.5rem 0 0 0;
-            opacity: 0.9;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-
-        .card {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            margin-bottom: 2rem;
-        }
-
-        h2 {
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 0.5rem;
-            margin-top: 0;
-        }
-
-        /* قسم البيانات */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-
-        input[type="text"], input[type="tel"] {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
-
-        /* المحتوى التعليمي */
-        .content-section p {
-            text-align: justify;
-        }
-
-        .highlight {
-            background-color: #e8f8f5;
-            border-right: 4px solid var(--secondary-color);
-            padding: 1rem;
-            margin: 1rem 0;
-            border-radius: 0 4px 4px 0;
-        }
-
-        /* الأسئلة */
-        .question {
-            margin-bottom: 1.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px dashed #ddd;
-        }
-
-        .question:last-child {
-            border-bottom: none;
-        }
-
-        .options label {
-            display: block;
-            background: #f9f9f9;
-            padding: 0.75rem;
-            margin: 0.5rem 0;
-            border: 1px solid #eee;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: 0.2s;
-            font-weight: normal;
-        }
-
-        .options label:hover {
-            background: #e2f0d9;
-            border-color: var(--secondary-color);
-        }
-
-        .options input[type="radio"] {
-            margin-left: 10px;
-        }
-
-        /* الأزرار */
-        .btn {
-            display: block;
-            width: 100%;
-            background-color: var(--secondary-color);
-            color: white;
-            border: none;
-            padding: 1rem;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .btn:hover {
-            background-color: #117a65;
-        }
-
-        /* النتيجة والشهادة */
-        #result-box {
-            display: none;
-            text-align: center;
-        }
-
-        .alert {
-            padding: 1rem;
-            border-radius: 4px;
-            margin-bottom: 1.5rem;
-            font-weight: bold;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        /* تصميم الشهادة */
-        #certificate {
-            display: none;
-            border: 10px double var(--primary-color);
-            padding: 3rem;
-            background: #fffbf2;
-            position: relative;
-            margin-top: 2rem;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-
-        #certificate h2 {
-            font-size: 2.5rem;
-            color: #b38600;
-            border: none;
-            margin-bottom: 1rem;
-        }
-
-        .cert-text {
-            font-size: 1.2rem;
-            margin: 2rem 0;
-        }
-
-        .cert-data {
-            font-weight: bold;
-            color: var(--primary-color);
-            font-size: 1.4rem;
-            text-decoration: underline;
-        }
-
-        .cert-footer {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 3rem;
-            font-weight: bold;
-        }
-
-        .print-btn {
-            background-color: var(--primary-color);
-            margin-top: 1rem;
-        }
-
-        /* التكيف مع الطباعة */
+        /* تصميم مخصص للطباعة فقط */
         @media print {
-            body * {
-                visibility: hidden;
+            body {
+                background-color: white;
+                font-size: 12px;
             }
-            #certificate, #certificate * {
-                visibility: visible;
+            .no-print {
+                display: none !important;
             }
-            #certificate {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                box-shadow: none;
-                border: 10px double #000;
+            .print-only {
+                display: block !important;
             }
-            .print-btn {
-                display: none;
+            .print-card {
+                border: 1px solid #ccc !important;
+                box-shadow: none !important;
+                padding: 10px !important;
             }
         }
     </style>
 </head>
-<body>
+<body class="text-gray-800">
 
-<header>
-    <h1>دورة التميز لاجتياز الرخصة المهنية للمعلمين</h1>
-    <p>تأهيل تربوي وتخصصي متكامل وفق معايير هيئة تقويم التعليم والتدريب</p>
-</header>
-
-<div class="container">
-    
-    <!-- أولاً: نموذج بيانات المعلم -->
-    <div class="card" id="profile-section">
-        <h2>بيانات المعلم المتدرب</h2>
-        <form id="user-form">
-            <div class="form-group">
-                <label for="teacher-name">اسم المعلم الثلاثي:</label>
-                <input type="text" id="teacher-name" required placeholder="أدخل اسمك الكامل">
-            </div>
-            <div class="form-group">
-                <label for="national-id">السجل المدني (الهوية الوطنية):</label>
-                <input type="text" id="national-id" pattern="\d{10}" title="يجب أن يتكون السجل المدني من 10 أرقام" required placeholder="أدخل 10 أرقام">
-            </div>
-            <div class="form-group">
-                <label for="phone-number">رقم الجوال:</label>
-                <input type="tel" id="phone-number" pattern="05\d{8}" title="يجب أن يبدأ برقم 05 ويتكون من 10 أرقام" required placeholder="05xxxxxxxx">
-            </div>
-        </form>
-    </div>
-
-    <!-- ثانياً: المحتوى النصي للدورة -->
-    <div class="card content-section" id="course-content">
-        <h2>المحتوى المعرفي للدورة</h2>
-        <p>مرحباً بك زميلنا المعلم/المعلمة في هذا الملخص السريع لأهم ركائز اختبار الرخصة المهنية (القسم التربوي العام). يركز الاختبار على ثلاثة مجالات رئيسية:</p>
+    <div class="min-h-screen flex flex-col md:flex-row">
         
-        <div class="highlight">
-            <strong>1. القيم والمسؤوليات المهنية:</strong> التزام المعلم بالهوية الوطنية، وأخلاقيات المهنة، والتطوير المهني المستمر المستند إلى المعايير.
-        </div>
-        
-        <div class="highlight">
-            <strong>2. المعرفة المهنية:</strong> الإلمام بخصائص النمو لدى الطلاب، وكيفية تلبية احتياجات الفروق الفردية، ومعرفة طرق التدريس العامة والتقويم.
-        </div>
-
-        <div class="highlight">
-            <strong>3. الممارسة المهنية:</strong> التخطيط الفعال للدروس، تهيئة بيئات تعلم تفاعلية وآمنة للطلاب، وتطبيق أدوات تقويم متنوعة لقياس نواتج التعلم بدقة.
-        </div>
-        
-        <p><strong>تذكر دائماً:</strong> التغذية الراجعة الإيجابية والفورية تعزز من دافعية الطلاب، والتقويم التكويني (البنائي) يستهدف تجويد عملية التعلم أثناء حدوثها، وليس مجرد رصد الدرجات.</p>
-    </div>
-
-    <!-- ثالثاً: الاختبار -->
-    <div class="card" id="quiz-section">
-        <h2>اختبار نهاية الدورة</h2>
-        <p style="color: var(--accent-color); font-weight: bold;">ملاحظة: يتطلب اجتياز الدورة والحصول على الشهادة تحقيق نسبة 60% أو أعلى (الإجابة الصحيحة على 3 أسئلة على الأقل من أصل 5).</p>
-        
-        <form id="quiz-form">
-            <!-- السؤال 1 -->
-            <div class="question">
-                <p><strong>السؤال 1:</strong> أي من أنواع التقويم التالية يُستخدم للوقوف على سير تقدم الطالب أثناء العملية التعليمية وتعديل مسار التدريس؟</p>
-                <div class="options">
-                    <label><input type="radio" name="q1" value="A"> أ) التقويم القبلي (التمهيدي)</label>
-                    <label><input type="radio" name="q1" value="B"> ب) التقويم البنائي (التكويني)</label>
-                    <label><input type="radio" name="q1" value="C"> ج) التقويم الختامي (النهائي)</label>
-                    <label><input type="radio" name="q1" value="D"> د) التقويم التشخيصي</label>
+        <!-- الشريط الجانبي (Sidebar) - مخفي في الطباعة -->
+        <aside class="w-full md:w-64 bg-emerald-800 text-white flex flex-col no-print shrink-0 shadow-lg">
+            <div class="p-5 text-center border-b border-emerald-700">
+                <div class="w-16 h-16 bg-white text-emerald-800 rounded-full flex items-center justify-center mx-auto mb-3 shadow-md">
+                    <i class="fa-solid fa-cow text-3xl"></i>
                 </div>
-            </div>
-
-            <!-- السؤال 2 -->
-            <div class="question">
-                <p><strong>السؤال 2:</strong> عندما يراعي المعلم أن من طلابه من يتعلم بالبصر، ومنهم بالسمع، ومنهم بالحركة، فهو يطبق نظرية:</p>
-                <div class="options">
-                    <label><input type="radio" name="q2" value="A"> أ) الذكاءات المتعددة</label>
-                    <label><input type="radio" name="q2" value="B"> ب) الاشتراط الإجرائي</label>
-                    <label><input type="radio" name="q2" value="C"> ج) التعلم بالاكتشاف</label>
-                    <label><input type="radio" name="q2" value="D"> د) التحليل النفسي</label>
-                </div>
-            </div>
-
-            <!-- السؤال 3 -->
-            <div class="question">
-                <p><strong>السؤال 3:</strong> تهدف عملية "التغذية الراجعة" في البيئة الصفية بشكل أساسي إلى:</p>
-                <div class="options">
-                    <label><input type="radio" name="q3" value="A"> أ) معاقبة الطلاب المقصرين</label>
-                    <label><input type="radio" name="q3" value="B"> ب) ترتيب الطلاب تنازلياً حسب درجاتهم</label>
-                    <label><input type="radio" name="q3" value="C"> ج) توجيه الطالب وتعديل أدائه وتطوير تعلمه</label>
-                    <label><input type="radio" name="q3" value="D"> د) إنهاء المنهج الدراسي في الوقت المحدد</label>
-                </div>
-            </div>
-
-            <!-- السؤال 4 -->
-            <div class="question">
-                <p><strong>السؤال 4:</strong> من أهم شروط صياغة الأهداف السلوكية الإجرائية أن تكون:</p>
-                <div class="options">
-                    <label><input type="radio" name="q4" value="A"> أ) عامة وشاملة لكل مجالات المادة</label>
-                    <label><input type="radio" name="q4" value="B"> ب) تركز على نشاط المعلم فقط</label>
-                    <label><input type="radio" name="q4" value="C"> ج) صعبة التقييم لقياس التحدي</label>
-                    <label><input type="radio" name="q4" value="D"> د) محددة وقابلة للقياس والملاحظة</label>
-                </div>
-            </div>
-
-            <!-- السؤال 5 -->
-            <div class="question">
-                <p><strong>السؤال 5:</strong> أي العبارات التالية تمثل التزاماً بأخلاقيات مهنة التعليم؟</p>
-                <div class="options">
-                    <label><input type="radio" name="q5" value="A"> أ) مناقشة خصوصيات الطلاب ومشكلاتهم مع زملائهم بالصف</label>
-                    <label><input type="radio" name="q5" value="B"> ب) التعامل مع جميع الطلاب بعدالة ومساواة ودون تمييز</label>
-                    <label><input type="radio" name="q5" value="C"> ج) تقديم الدروس الخصوصية المدفوعة لطلاب المدرسة</label>
-                    <label><input type="radio" name="q5" value="D"> د) التركيز على الطلاب المتفوقين فقط وإهمال البقية</label>
-                </div>
-            </div>
-
-            <button type="button" class="btn" onclick="evaluateQuiz()">إرسال الإجابات واستخراج النتيجة</button>
-        </form>
-    </div>
-
-    <!-- رابعاً: صندوق النتيجة والشهادة -->
-    <div class="card" id="result-box">
-        <div id="result-message"></div>
-        
-        <!-- قالب الشهادة -->
-        <div id="certificate">
-            <h2>شهادة اجتياز دورة تدريبية</h2>
-            <p>تشهد منصة التدريب التربوي بأن المعلم / المعلمة:</p>
-            <p class="cert-data" id="cert-name"></p>
-            <p>صاحب السجل المدني رقم: <span id="cert-id" style="font-weight:bold;"></span></p>
-            <p>قد اجتاز بنجاح الدورة التأهيلية بعنوان:</p>
-            <h3>« اجتياز اختبار الرخصة المهنية للمعلمين »</h3>
-            <p>بعد حصوله على نسبة اجتياز: <span id="cert-score" style="font-weight:bold;"></span></p>
-            
-            <div class="cert-footer">
-                <div>تاريخ الاجتياز: <span id="cert-date"></span></div>
-                <div>ختم وتوقيع إدارة التدريب</div>
+                <h1 class="text-xl font-bold tracking-wide">ألبان أم ماجد</h1>
+                <p class="text-xs text-emerald-200 mt-1">نظام المبيعات والمصروفات الذكي</p>
             </div>
             
-            <button class="btn print-btn" onclick="window.print()">طباعة الشهادة وحفظها PDF</button>
-        </div>
+            <!-- أزرار التنقل بين الشاشات -->
+            <nav class="flex-grow p-4 space-y-2">
+                <button onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-emerald-700 text-white font-medium transition-all hover:bg-emerald-600">
+                    <i class="fa-solid fa-chart-line w-5"></i>
+                    <span>الرئيسية والإحصائيات</span>
+                </button>
+                <button onclick="switchTab('sales')" id="btn-sales" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-emerald-100 font-medium transition-all hover:bg-emerald-700/50">
+                    <i class="fa-solid fa-cart-shopping w-5"></i>
+                    <span>تسجيل مبيعات</span>
+                </button>
+                <button onclick="switchTab('expenses')" id="btn-expenses" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-emerald-100 font-medium transition-all hover:bg-emerald-700/50">
+                    <i class="fa-solid fa-file-invoice-dollar w-5"></i>
+                    <span>تسجيل مصروفات</span>
+                </button>
+                <button onclick="switchTab('reports')" id="btn-reports" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-emerald-100 font-medium transition-all hover:bg-emerald-700/50">
+                    <i class="fa-solid fa-print w-5"></i>
+                    <span>التقارير والفواتير</span>
+                </button>
+                <button onclick="switchTab('settings')" id="btn-settings" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-emerald-100 font-medium transition-all hover:bg-emerald-700/50">
+                    <i class="fa-solid fa-gears w-5"></i>
+                    <span>قائمة المنتجات والأسعار</span>
+                </button>
+            </nav>
+
+            <div class="p-4 border-t border-emerald-700 text-center text-xs text-emerald-300">
+                برنامج إدارة ألبان أم ماجد v1.1
+            </div>
+        </aside>
+
+        <!-- المحتوى الرئيسي (Main Content) -->
+        <main class="flex-grow p-4 md:p-8 overflow-y-auto">
+            
+            <header class="flex justify-between items-center mb-8 no-print bg-white p-4 rounded-xl shadow-sm">
+                <div>
+                    <h2 id="page-title" class="text-2xl font-bold text-gray-800">لوحة التحكم الرئيسية</h2>
+                    <p class="text-sm text-gray-500">أهلاً بكِ أم ماجد، تابعي مبيعاتك وأرباحكِ اليومية بكل سهولة.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span id="current-date-badge" class="bg-emerald-50 text-emerald-800 px-4 py-2 rounded-full font-bold text-sm border border-emerald-100">
+                        <i class="fa-regular fa-calendar-days ml-1"></i>
+                        <span id="lbl-today-date">--/--/----</span>
+                    </span>
+                </div>
+            </header>
+
+            <!-- ======================================= -->
+            <!-- 1. شاشة لوحة التحكم (Dashboard Tab) -->
+            <!-- ======================================= -->
+            <div id="tab-dashboard" class="tab-content space-y-6">
+                <!-- كروت الملخصات والأرقام -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- المبيعات -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 font-bold">إجمالي مبيعات الألبان</p>
+                            <h3 id="card-total-sales" class="text-3xl font-extrabold text-emerald-600 mt-2">0.00 <span class="text-sm font-normal">ريال</span></h3>
+                        </div>
+                        <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                        </div>
+                    </div>
+                    <!-- المصروفات -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 font-bold">إجمالي المصروفات</p>
+                            <h3 id="card-total-expenses" class="text-3xl font-extrabold text-rose-600 mt-2">0.00 <span class="text-sm font-normal">ريال</span></h3>
+                        </div>
+                        <div class="w-14 h-14 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+                            <i class="fa-solid fa-arrow-trend-down"></i>
+                        </div>
+                    </div>
+                    <!-- الأرباح -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500 font-bold">صافي الأرباح</p>
+                            <h3 id="card-net-profit" class="text-3xl font-extrabold text-blue-600 mt-2">0.00 <span class="text-sm font-normal">ريال</span></h3>
+                        </div>
+                        <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- الرسوم البيانية وقوائم سريعة -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- رسم بياني للمقارنة مبيعات/مصروفات -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 lg:col-span-2">
+                        <h4 class="text-lg font-bold mb-4 text-gray-800">مخطط حركة المال (مبيعات ومصروفات)</h4>
+                        <div class="h-64 flex items-center justify-center">
+                            <canvas id="dashboardChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- إحصائيات بيع منتجات اللبن -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-lg font-bold mb-4 text-gray-800">نسبة مبيعات المنتجات</h4>
+                            <div class="h-48 flex items-center justify-center">
+                                <canvas id="productsPieChart"></canvas>
+                            </div>
+                        </div>
+                        <div id="pie-chart-legend" class="mt-4 border-t border-gray-100 pt-3 flex flex-wrap gap-2 justify-center text-xs text-gray-600">
+                            <!-- سيتم حقن دليل الرسم البياني تلقائياً -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================= -->
+            <!-- 2. شاشة تسجيل مبيعات جديدة (Sales Tab) -->
+            <!-- ======================================= -->
+            <div id="tab-sales" class="tab-content hidden space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- فورمة تسجيل المبيعات -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
+                            <i class="fa-solid fa-circle-plus text-emerald-600 ml-1"></i> تسجيل عملية بيع جديدة
+                        </h3>
+                        <form id="form-add-sale" onsubmit="saveSale(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">تاريخ البيع</label>
+                                <input type="date" id="sale-date" required class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">نوع اللبن / المنتج</label>
+                                <select id="sale-product-select" onchange="updateSaleCalculations()" required class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+                                    <!-- سيتم تعبئتها ديناميكياً من الجافا سكريبت -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">سعر الحبة (ريال)</label>
+                                <input type="text" id="sale-price-preview" readonly class="w-full px-4 py-2 border rounded-xl bg-gray-50 text-gray-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">الكمية (عدد العبوات)</label>
+                                <input type="number" id="sale-quantity" oninput="updateSaleCalculations()" min="1" required class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <!-- الحساب التلقائي -->
+                            <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+                                <div class="flex justify-between items-center text-emerald-800">
+                                    <span class="font-bold">المجموع الكلي للحساب:</span>
+                                    <span class="text-2xl font-black"><span id="lbl-sale-total">0.00</span> ريال</span>
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all">
+                                <i class="fa-solid fa-check ml-1"></i> حفظ العملية
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- قائمة المبيعات المدخلة اليوم/مؤخراً -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 lg:col-span-2">
+                        <div class="flex justify-between items-center mb-4 border-b pb-2">
+                            <h3 class="text-lg font-bold text-gray-800">
+                                <i class="fa-solid fa-list-check text-emerald-600 ml-1"></i> قائمة المبيعات الأخيرة
+                            </h3>
+                            <button onclick="clearAllSales()" class="text-xs text-rose-600 hover:text-rose-800 transition-all font-semibold">
+                                <i class="fa-regular fa-trash-can"></i> مسح جميع المبيعات
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto max-h-[420px]">
+                            <table class="w-full text-right border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-50 text-gray-600 border-b">
+                                        <th class="p-3 font-semibold text-sm">التاريخ</th>
+                                        <th class="p-3 font-semibold text-sm">المنتج</th>
+                                        <th class="p-3 font-semibold text-sm">السعر حبة</th>
+                                        <th class="p-3 font-semibold text-sm">الكمية</th>
+                                        <th class="p-3 font-semibold text-sm">الإجمالي</th>
+                                        <th class="p-3 font-semibold text-sm text-center">حذف</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sales-table-rows" class="divide-y divide-gray-100">
+                                    <!-- تعبأ ديناميكياً -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================= -->
+            <!-- 3. شاشة تسجيل مصروفات جديدة (Expenses Tab) -->
+            <!-- ======================================= -->
+            <div id="tab-expenses" class="tab-content hidden space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- فورمة تسجيل المصروفات -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
+                            <i class="fa-solid fa-minus text-rose-600 ml-1"></i> تسجيل مصروف جديد
+                        </h3>
+                        <form id="form-add-expense" onsubmit="saveExpense(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">تاريخ الصرف</label>
+                                <input type="date" id="expense-date" required class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">بند المصروف (نوع المصروف)</label>
+                                <select id="expense-type" required class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none bg-white">
+                                    <option value="أعلاف ومواشي">أعلاف ومواشي</option>
+                                    <option value="عبوات وأدوات تعبئة">عبوات وأدوات تعبئة</option>
+                                    <option value="نقل وتوصيل">نقل وتوصيل</option>
+                                    <option value="ديزل ومحروقات">ديزل ومحروقات</option>
+                                    <option value="أخرى">أخرى</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">المبلغ (ريال)</label>
+                                <input type="number" step="0.01" id="expense-amount" placeholder="0.00" required class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">ملاحظات إضافية</label>
+                                <textarea id="expense-notes" rows="3" placeholder="أضف تفاصيل أخرى مثل اسم المحل أو البائع..." class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-rose-500 focus:outline-none"></textarea>
+                            </div>
+                            <button type="submit" class="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all">
+                                <i class="fa-solid fa-check ml-1"></i> حفظ المصروف
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- قائمة المصروفات الأخيرة -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 lg:col-span-2">
+                        <div class="flex justify-between items-center mb-4 border-b pb-2">
+                            <h3 class="text-lg font-bold text-gray-800">
+                                <i class="fa-solid fa-wallet text-rose-600 ml-1"></i> قائمة المصروفات الأخيرة
+                            </h3>
+                            <button onclick="clearAllExpenses()" class="text-xs text-rose-600 hover:text-rose-800 transition-all font-semibold">
+                                <i class="fa-regular fa-trash-can"></i> مسح جميع المصروفات
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto max-h-[420px]">
+                            <table class="w-full text-right border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-50 text-gray-600 border-b">
+                                        <th class="p-3 font-semibold text-sm">التاريخ</th>
+                                        <th class="p-3 font-semibold text-sm">بند المصروف</th>
+                                        <th class="p-3 font-semibold text-sm">المبلغ</th>
+                                        <th class="p-3 font-semibold text-sm">ملاحظات</th>
+                                        <th class="p-3 font-semibold text-sm text-center">حذف</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="expenses-table-rows" class="divide-y divide-gray-100">
+                                    <!-- تعبأ ديناميكياً -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================= -->
+            <!-- 4. شاشة التقارير والفواتير (Reports Tab) -->
+            <!-- ======================================= -->
+            <div id="tab-reports" class="tab-content hidden space-y-6">
+                
+                <!-- لوحة الفلترة والطباعة (تخفى من الطباعة) -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 no-print space-y-4">
+                    <h3 class="text-lg font-bold text-gray-800">تخصيص وطباعة كشف الحساب والتقرير المالي</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1">من تاريخ</label>
+                            <input type="date" id="report-start-date" class="w-full px-4 py-2 border rounded-xl">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1">إلى تاريخ</label>
+                            <input type="date" id="report-end-date" class="w-full px-4 py-2 border rounded-xl">
+                        </div>
+                        <div class="flex items-end gap-2">
+                            <button onclick="generateReport()" class="flex-grow py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md transition-all">
+                                <i class="fa-solid fa-magnifying-glass ml-1"></i> تصفية الكشف
+                            </button>
+                            <button onclick="window.print()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-all">
+                                <i class="fa-solid fa-print ml-1"></i> طباعة التقرير
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- الهيكل الرئيسي لتقرير كشف الحساب (يُصمم ليكون قابلاً للطباعة بشكل احترافي) -->
+                <div id="printable-report-area" class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 print-card">
+                    
+                    <!-- الهيدر الخاص بالتقرير عند الطباعة -->
+                    <div class="flex justify-between items-center border-b pb-6 mb-6">
+                        <div>
+                            <h2 class="text-2xl font-black text-emerald-800">ألبان أم ماجد البلدية</h2>
+                            <p class="text-sm text-gray-500 mt-1">كشف حساب مالي تفصيلي لمبيعات ومصروفات الألبان</p>
+                        </div>
+                        <div class="text-left">
+                            <p class="text-sm font-bold text-gray-700">تاريخ إصدار الكشف:</p>
+                            <p id="report-generation-time" class="text-sm text-gray-500">18/05/2026</p>
+                        </div>
+                    </div>
+
+                    <!-- الأرقام الملخصة في التقرير المطبوع -->
+                    <div class="grid grid-cols-3 gap-4 mb-8 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                        <div class="text-center">
+                            <p class="text-xs font-bold text-gray-500">إجمالي مبيعات الفترة</p>
+                            <p id="rep-total-sales" class="text-xl font-bold text-emerald-700 mt-1">0.00 ريال</p>
+                        </div>
+                        <div class="text-center border-r border-gray-200">
+                            <p class="text-xs font-bold text-gray-500">إجمالي مصروفات الفترة</p>
+                            <p id="rep-total-expenses" class="text-xl font-bold text-rose-700 mt-1">0.00 ريال</p>
+                        </div>
+                        <div class="text-center border-r border-gray-200">
+                            <p class="text-xs font-bold text-gray-500">صافي الأرباح المحققة</p>
+                            <p id="rep-net-profit" class="text-xl font-bold text-blue-700 mt-1">0.00 ريال</p>
+                        </div>
+                    </div>
+
+                    <!-- جدول تفاصيل المبيعات للفترة المحددة -->
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="text-md font-bold text-emerald-800 mb-2 border-r-4 border-emerald-600 pr-2">أولاً: تفاصيل حركات المبيعات خلال الفترة</h4>
+                            <table class="w-full text-right border">
+                                <thead>
+                                    <tr class="bg-gray-100 text-gray-700 border-b">
+                                        <th class="p-2 border">تاريخ البيع</th>
+                                        <th class="p-2 border">المنتج</th>
+                                        <th class="p-2 border">سعر الحبة</th>
+                                        <th class="p-2 border">الكمية المباعة</th>
+                                        <th class="p-2 border">المبلغ الكلي</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rep-sales-rows" class="divide-y divide-gray-100">
+                                    <!-- تعبأ ديناميكياً -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- جدول تفاصيل المصروفات للفترة المحددة -->
+                        <div>
+                            <h4 class="text-md font-bold text-rose-800 mb-2 border-r-4 border-rose-600 pr-2">ثانياً: تفاصيل حركات المصروفات خلال الفترة</h4>
+                            <table class="w-full text-right border">
+                                <thead>
+                                    <tr class="bg-gray-100 text-gray-700 border-b">
+                                        <th class="p-2 border">تاريخ الصرف</th>
+                                        <th class="p-2 border">بند المصروف</th>
+                                        <th class="p-2 border">قيمة المصروف</th>
+                                        <th class="p-2 border">الملاحظات والبيان</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rep-expenses-rows" class="divide-y divide-gray-100">
+                                    <!-- تعبأ ديناميكياً -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- التوقيع وتذييل الصفحة المطبوعة والعبارة الحصرية -->
+                    <div class="mt-16 text-center border-t pt-8">
+                        <p class="text-xl font-bold text-emerald-800 mb-2 font-serif">شكراً لتعاملكم معنا ،، أم ماجد</p>
+                        <p class="text-xs text-gray-400">نظام ألبان أم ماجد - تم التصدير والطباعة إلكترونياً بنجاح</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================= -->
+            <!-- 5. شاشة قائمة المنتجات والأسعار (Settings Tab) -->
+            <!-- ======================================= -->
+            <div id="tab-settings" class="tab-content hidden space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- التحكم بقائمة المنتجات -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">إدارة المنتجات وأسعار البيع</h3>
+                        <p class="text-xs text-gray-500 mb-4">هنا يمكنكِ تحديد سعر حبة اللبن الصغير أو الكبير، أو إضافة صنف جديد (مثل حليب، سمن، زبدة).</p>
+                        
+                        <!-- جدول الأسعار والمنتجات الحالية -->
+                        <div class="overflow-x-auto mb-6">
+                            <table class="w-full text-right border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-50 text-gray-600 border-b">
+                                        <th class="p-3 text-sm font-semibold">اسم المنتج</th>
+                                        <th class="p-3 text-sm font-semibold">سعر الحبة (ريال)</th>
+                                        <th class="p-3 text-sm font-semibold text-center">حذف</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="settings-products-rows">
+                                    <!-- تعبأ ديناميكياً -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- نموذج إضافة منتج جديد -->
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                            <h4 class="text-sm font-bold text-gray-700 mb-3">أو إضافة صنف جديد للمنتجات</h4>
+                            <div class="grid grid-cols-2 gap-3 mb-3">
+                                <input type="text" id="new-product-name" placeholder="مثال: حليب بقري لتر" class="px-3 py-2 border rounded-lg text-sm focus:outline-emerald-500 bg-white">
+                                <input type="number" id="new-product-price" placeholder="السعر (ريال)" class="px-3 py-2 border rounded-lg text-sm focus:outline-emerald-500 bg-white">
+                            </div>
+                            <button onclick="addNewProduct()" class="w-full py-2 bg-emerald-700 text-white rounded-lg text-sm font-bold hover:bg-emerald-800 transition-all">
+                                <i class="fa-solid fa-plus ml-1"></i> إضافة المنتج للقائمة
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- إرشادات ومساعدة -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800 mb-3 border-b pb-2">تعليمات الاستخدام</h3>
+                            <ul class="space-y-3 text-sm text-gray-600">
+                                <li class="flex gap-2 items-start">
+                                    <i class="fa-regular fa-circle-check text-emerald-600 mt-1"></i>
+                                    <span><strong>حفظ البيانات التلقائي:</strong> بمجرد إدخال أي مبيعات أو مصروفات، يقوم المتصفح بحفظها مباشرة حتى لا تفقديها مطلقاً.</span>
+                                </li>
+                                <li class="flex gap-2 items-start">
+                                    <i class="fa-regular fa-circle-check text-emerald-600 mt-1"></i>
+                                    <span><strong>طباعة التقرير والفاتورة:</strong> اذهبي لشاشة التقارير، ثم اضغطي على زر "طباعة التقرير". سيتم إخفاء القوائم الجانبية تلقائياً لتظهر الفاتورة جاهزة وجميلة ومنسقة للطباعة أو الحفظ كملف PDF.</span>
+                                </li>
+                                <li class="flex gap-2 items-start">
+                                    <i class="fa-regular fa-circle-check text-emerald-600 mt-1"></i>
+                                    <span><strong>التحكم بالحساب:</strong> يمكن تصفية الكشف بين تاريخين للحصول على أرباح الأسبوع، الشهر، أو السنة بسهولة.</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100 flex items-center gap-3 mt-4">
+                            <i class="fa-solid fa-info-circle text-2xl text-emerald-700"></i>
+                            <p class="text-xs text-emerald-800 font-medium">البرنامج يعمل بدون انترنت! يمكنك حفظ الصفحة على سطح مكتب جهازك وفتحها واستعمالها في أي وقت ومكان.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
     </div>
 
-</div>
+    <!-- كود الجافا سكريبت لتفعيل لوحة التحكم، العمليات الحسابية، وقواعد البيانات المصغرة -->
+    <script>
+        // تعريف المنتجات الافتراضية إذا كانت قاعدة البيانات فارغة
+        const defaultProducts = [
+            { id: 1, name: 'لبن صغير', price: 5 },
+            { id: 2, name: 'لبن كبير', price: 10 }
+        ];
 
-<script>
-    // الإجابات النموذجية الصحيحة لـ 5 أسئلة
-    const correctAnswers = {
-        q1: 'B',
-        q2: 'A',
-        q3: 'C',
-        q4: 'D',
-        q5: 'B'
-    };
+        // تهيئة قواعد البيانات من المتصفح (Local Storage)
+        let products = JSON.parse(localStorage.getItem('om_majid_products')) || defaultProducts;
+        let sales = JSON.parse(localStorage.getItem('om_majid_sales')) || [];
+        let expenses = JSON.parse(localStorage.getItem('om_majid_expenses')) || [];
 
-    function evaluateQuiz() {
-        // 1. التحقق من إدخال البيانات الشخصية أولاً
-        const name = document.getElementById('teacher-name').value.trim();
-        const nationalId = document.getElementById('national-id').value.trim();
-        const phone = document.getElementById('phone-number').value.trim();
-        const userForm = document.getElementById('user-form');
+        // الرسوم البيانية
+        let dbChart = null;
+        let dbPieChart = null;
 
-        if (!userForm.checkValidity() || name === "" || nationalId === "" || phone === "") {
-            alert("فضلاً، قم بتعبئة بيانات المعلم (الاسم، السجل المدني 10 أرقام، الجوال يبدأ بـ 05) بشكل صحيح قبل إرسال الاختبار.");
-            document.getElementById('profile-section').scrollIntoView({ behavior: 'smooth' });
-            return;
+        // عند تحميل الصفحة بالكامل
+        window.onload = function() {
+            setDates();
+            populateProductsDropdown();
+            loadSalesData();
+            loadExpensesData();
+            updateDashboardWidgets();
+            renderDashboardCharts();
+            generateReport();
+        };
+
+        // ضبط تواريخ اليوم التلقائية
+        function setDates() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('sale-date').value = today;
+            document.getElementById('expense-date').value = today;
+            document.getElementById('report-start-date').value = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]; // بداية الشهر الحالي
+            document.getElementById('report-end-date').value = today;
+            
+            // تاريخ الهيدر
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            document.getElementById('lbl-today-date').innerText = new Date().toLocaleDateString('ar-SA', options);
+            document.getElementById('report-generation-time').innerText = new Date().toLocaleDateString('ar-SA', options);
         }
 
-        // 2. حساب الدرجة
-        const form = document.getElementById('quiz-form');
-        let score = 0;
-        let totalQuestions = 5;
+        // تبديل الشاشات التبويبية (Navigation Tabs)
+        function switchTab(tabId) {
+            // إخفاء كل التبويبات
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.add('hidden'));
 
-        for (let key in correctAnswers) {
-            const selected = form.querySelector(`input[name="${key}"]:checked`);
-            if (selected && selected.value === correctAnswers[key]) {
-                score++;
+            // إظهار التبويب النشط
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            // إزالة تنسيق التنشيط عن الأزرار
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-emerald-700', 'text-white');
+                btn.classList.add('text-emerald-100', 'hover:bg-emerald-700/50');
+            });
+
+            // تنشيط الزر المحدد
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('text-emerald-100', 'hover:bg-emerald-700/50');
+            activeBtn.classList.add('bg-emerald-700', 'text-white');
+
+            // تعديل العنوان الرئيسي للشاشة
+            const titles = {
+                'dashboard': 'لوحة التحكم الرئيسية والإحصائيات',
+                'sales': 'تسجيل عمليات بيع ألبان جديدة',
+                'expenses': 'تسجيل وإدارة المصروفات التشغيلية',
+                'reports': 'التقارير المالية والفوترة التفصيلية',
+                'settings': 'قائمة أسعار المنتجات والألبان'
+            };
+            document.getElementById('page-title').innerText = titles[tabId];
+
+            // تحديث محتوى بعض الشاشات عند الدخول إليها
+            if(tabId === 'dashboard') {
+                updateDashboardWidgets();
+                renderDashboardCharts();
+            } else if(tabId === 'reports') {
+                generateReport();
+            } else if(tabId === 'settings') {
+                renderSettingsProducts();
             }
         }
 
-        // حساب النسبة المئوية
-        let percentage = (score / totalQuestions) * 100;
-
-        // 3. إظهار النتيجة والشهادة
-        const resultBox = document.getElementById('result-box');
-        const resultMessage = document.getElementById('result-message');
-        const certificate = document.getElementById('certificate');
-
-        resultBox.style.display = 'block';
-
-        if (percentage >= 60) {
-            // ناجح المؤهل للشهادة
-            resultMessage.innerHTML = `
-                <div class="alert alert-success">
-                    مبارك النجاح! لقد اجتزت الاختبار بنسبة ${percentage}% (${score} من ${totalQuestions} إجابات صحيحة).
-                </div>
-                <p>تم إصدار شهادتك بنجاح، يمكنك مشاهدتها وطباعتها أدناه.</p>
-            `;
+        // تعبئة قائمة المنتجات المنسدلة في فورمة البيع وفي شاشة إدارة المنتجات
+        function populateProductsDropdown() {
+            const dropdown = document.getElementById('sale-product-select');
+            dropdown.innerHTML = '';
             
-            // تعبئة بيانات الشهادة
-            document.getElementById('cert-name').innerText = name;
-            document.getElementById('cert-id').innerText = nationalId;
-            document.getElementById('cert-score').innerText = percentage + '%';
-            
-            // وضع تاريخ اليوم بالتقويم الحالي
-            const today = new Date();
-            document.getElementById('cert-date').innerText = today.toLocaleDateString('ar-SA');
-            
-            certificate.style.display = 'block';
-        } else {
-            // رoriginal لم يجتز النسبة المطلوب
-            resultMessage.innerHTML = `
-                <div class="alert alert-danger">
-                    لم يتم اجتياز النسبة المطلوبة. نسبتك الحالية هي ${percentage}% (${score} من ${totalQuestions} إجابات صحيحة).
-                </div>
-                <p>شروط منح الشهادة هي الحصول على 60% على الأقل. فضلاً راجع المحتوى المعرفي وأعد المحاولة مرة أخرى.</p>
-            `;
-            certificate.style.display = 'none';
+            products.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.innerText = `${p.name} - ${p.price} ريال`;
+                dropdown.appendChild(opt);
+            });
+
+            updateSaleCalculations();
         }
 
-        // الانتقال التلقائي لصندوق النتيجة
-        resultBox.scrollIntoView({ behavior: 'smooth' });
-    }
-</script>
+        // تحديث الحساب التلقائي للضرب عند تعبئة الكمية والمنتج
+        function updateSaleCalculations() {
+            const pId = parseInt(document.getElementById('sale-product-select').value);
+            const quantity = parseInt(document.getElementById('sale-quantity').value) || 0;
+            const product = products.find(p => p.id === pId);
+            
+            if (product) {
+                document.getElementById('sale-price-preview').value = product.price.toFixed(2);
+                const total = product.price * quantity;
+                document.getElementById('lbl-sale-total').innerText = total.toFixed(2);
+            }
+        }
 
+        // حفظ مبيعات جديدة
+        function saveSale(e) {
+            e.preventDefault();
+            const date = document.getElementById('sale-date').value;
+            const pId = parseInt(document.getElementById('sale-product-select').value);
+            const quantity = parseInt(document.getElementById('sale-quantity').value);
+            const product = products.find(p => p.id === pId);
+
+            if(!product || !quantity || quantity <= 0) return;
+
+            const newSale = {
+                id: Date.now(),
+                date: date,
+                productId: pId,
+                productName: product.name,
+                price: product.price,
+                quantity: quantity,
+                total: product.price * quantity
+            };
+
+            sales.unshift(newSale); // إضافته في بداية القائمة لتظهر أولاً
+            localStorage.setItem('om_majid_sales', JSON.stringify(sales));
+
+            // تفريغ النموذج وتحديث العرض
+            document.getElementById('sale-quantity').value = '';
+            document.getElementById('lbl-sale-total').innerText = '0.00';
+            loadSalesData();
+            updateDashboardWidgets();
+            
+            // عرض رسالة نجاح جميلة بدون استخدام alert() المزعج
+            showNotification('تم حفظ عملية البيع بنجاح!', 'success');
+        }
+
+        // تحميل وعرض قائمة المبيعات الأخيرة
+        function loadSalesData() {
+            const tbody = document.getElementById('sales-table-rows');
+            tbody.innerHTML = '';
+
+            if (sales.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-400">لا توجد عمليات بيع مسجلة بعد.</td></tr>`;
+                return;
+            }
+
+            // عرض آخر 10 مبيعات في جدول الإدخال السريع
+            const recentSales = sales.slice(0, 10);
+            recentSales.forEach(s => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50';
+                tr.innerHTML = `
+                    <td class="p-3 text-sm">${s.date}</td>
+                    <td class="p-3 text-sm font-bold">${s.productName}</td>
+                    <td class="p-3 text-sm">${s.price.toFixed(2)} ريال</td>
+                    <td class="p-3 text-sm">${s.quantity} حبة</td>
+                    <td class="p-3 text-sm font-bold text-emerald-700">${s.total.toFixed(2)} ريال</td>
+                    <td class="p-3 text-center">
+                        <button onclick="deleteSale(${s.id})" class="text-rose-500 hover:text-rose-700 transition-all">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // حذف عملية بيع
+        function deleteSale(id) {
+            if(confirm('هل أنت متأكد من رغبتك في حذف عملية البيع هذه؟')) {
+                sales = sales.filter(s => s.id !== id);
+                localStorage.setItem('om_majid_sales', JSON.stringify(sales));
+                loadSalesData();
+                updateDashboardWidgets();
+                showNotification('تم حذف عملية البيع.', 'info');
+            }
+        }
+
+        // مسح جميع المبيعات
+        function clearAllSales() {
+            if(confirm('تحذير: هل أنت متأكد من رغبتك في مسح كافة المبيعات المخزنة نهائياً؟')) {
+                sales = [];
+                localStorage.setItem('om_majid_sales', JSON.stringify(sales));
+                loadSalesData();
+                updateDashboardWidgets();
+                showNotification('تم تفريغ كافة المبيعات.', 'error');
+            }
+        }
+
+        // حفظ مصروفات جديدة
+        function saveExpense(e) {
+            e.preventDefault();
+            const date = document.getElementById('expense-date').value;
+            const type = document.getElementById('expense-type').value;
+            const amount = parseFloat(document.getElementById('expense-amount').value);
+            const notes = document.getElementById('expense-notes').value || 'لا يوجد ملاحظات';
+
+            if(!amount || amount <= 0) return;
+
+            const newExpense = {
+                id: Date.now(),
+                date: date,
+                type: type,
+                amount: amount,
+                notes: notes
+            };
+
+            expenses.unshift(newExpense);
+            localStorage.setItem('om_majid_expenses', JSON.stringify(expenses));
+
+            // إعادة تعيين النموذج
+            document.getElementById('expense-amount').value = '';
+            document.getElementById('expense-notes').value = '';
+            loadExpensesData();
+            updateDashboardWidgets();
+            showNotification('تم تسجيل المصروف بنجاح!', 'success');
+        }
+
+        // تحميل وعرض قائمة المصروفات
+        function loadExpensesData() {
+            const tbody = document.getElementById('expenses-table-rows');
+            tbody.innerHTML = '';
+
+            if (expenses.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-400">لا توجد مصروفات مسجلة بعد.</td></tr>`;
+                return;
+            }
+
+            const recentExpenses = expenses.slice(0, 10);
+            recentExpenses.forEach(exp => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50';
+                tr.innerHTML = `
+                    <td class="p-3 text-sm">${exp.date}</td>
+                    <td class="p-3 text-sm font-bold text-rose-700">${exp.type}</td>
+                    <td class="p-3 text-sm font-bold">${exp.amount.toFixed(2)} ريال</td>
+                    <td class="p-3 text-sm text-gray-500 max-w-[200px] truncate" title="${exp.notes}">${exp.notes}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="deleteExpense(${exp.id})" class="text-rose-500 hover:text-rose-700 transition-all">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // حذف بند مصروف
+        function deleteExpense(id) {
+            if(confirm('هل أنت متأكد من رغبتك في حذف بند المصروف هذا؟')) {
+                expenses = expenses.filter(exp => exp.id !== id);
+                localStorage.setItem('om_majid_expenses', JSON.stringify(expenses));
+                loadExpensesData();
+                updateDashboardWidgets();
+                showNotification('تم حذف بند المصروف.', 'info');
+            }
+        }
+
+        // مسح جميع المصروفات
+        function clearAllExpenses() {
+            if(confirm('تحذير: هل أنت متأكد من رغبتك في مسح كافة المصروفات المسجلة نهائياً؟')) {
+                expenses = [];
+                localStorage.setItem('om_majid_expenses', JSON.stringify(expenses));
+                loadExpensesData();
+                updateDashboardWidgets();
+                showNotification('تم تفريغ كافة المصروفات.', 'error');
+            }
+        }
+
+        // تحديث قيم شاشات لوحة التحكم
+        function updateDashboardWidgets() {
+            let totalSalesSum = sales.reduce((acc, s) => acc + s.total, 0);
+            let totalExpensesSum = expenses.reduce((acc, exp) => acc + exp.amount, 0);
+            let netProfitSum = totalSalesSum - totalExpensesSum;
+
+            document.getElementById('card-total-sales').innerHTML = `${totalSalesSum.toFixed(2)} <span class="text-sm font-normal">ريال</span>`;
+            document.getElementById('card-total-expenses').innerHTML = `${totalExpensesSum.toFixed(2)} <span class="text-sm font-normal">ريال</span>`;
+            
+            const netCard = document.getElementById('card-net-profit');
+            netCard.innerHTML = `${netProfitSum.toFixed(2)} <span class="text-sm font-normal">ريال</span>`;
+            
+            // تغيير لون حقل الأرباح بناءً على قيمة الربح
+            if (netProfitSum < 0) {
+                netCard.className = "text-3xl font-extrabold text-rose-600 mt-2";
+            } else {
+                netCard.className = "text-3xl font-extrabold text-blue-600 mt-2";
+            }
+        }
+
+        // رسم المخططات البيانية التفاعلية بالرئيسية
+        function renderDashboardCharts() {
+            // تدمير الرسوم القديمة لمنع تداخل الرسومات
+            if (dbChart) dbChart.destroy();
+            if (dbPieChart) dbPieChart.destroy();
+
+            const totalSales = sales.reduce((acc, s) => acc + s.total, 0);
+            const totalExpenses = expenses.reduce((acc, exp) => acc + exp.amount, 0);
+
+            // 1. المخطط المالي (مقارنة الأعمدة)
+            const ctx = document.getElementById('dashboardChart').getContext('2d');
+            dbChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['إجمالي المبيعات', 'إجمالي المصروفات'],
+                    datasets: [{
+                        label: 'الملخص المالي بالريال السعودي',
+                        data: [totalSales, totalExpenses],
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.75)', // أخضر مبيعات
+                            'rgba(239, 68, 68, 0.75)'   // أحمر مصروفات
+                        ],
+                        borderColor: [
+                            'rgb(16, 185, 129)',
+                            'rgb(239, 68, 68)'
+                        ],
+                        borderWidth: 1.5,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // 2. مخطط نسبة مبيعات المنتجات
+            let pData = {};
+            products.forEach(p => pData[p.name] = 0);
+            sales.forEach(s => {
+                if(pData[s.productName] !== undefined) {
+                    pData[s.productName] += s.quantity;
+                }
+            });
+
+            const pieCtx = document.getElementById('productsPieChart').getContext('2d');
+            const bgColors = [
+                'rgba(16, 185, 129, 0.8)',
+                'rgba(59, 130, 246, 0.8)',
+                'rgba(245, 158, 11, 0.8)',
+                'rgba(168, 85, 247, 0.8)',
+                'rgba(236, 72, 153, 0.8)',
+                'rgba(100, 116, 139, 0.8)'
+            ];
+
+            dbPieChart = new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(pData),
+                    datasets: [{
+                        data: Object.values(pData),
+                        backgroundColor: bgColors.slice(0, Object.keys(pData).length),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            // تحديث دليل الألوان للرسم الدائري ديناميكياً
+            const legendDiv = document.getElementById('pie-chart-legend');
+            legendDiv.innerHTML = '';
+            Object.keys(pData).forEach((key, index) => {
+                const badgeColor = bgColors[index % bgColors.length];
+                legendDiv.innerHTML += `
+                    <span class="flex items-center gap-1">
+                        <span class="w-3 h-3 rounded-full" style="background-color: ${badgeColor}"></span> 
+                        ${key} (${pData[key]})
+                    </span>
+                `;
+            });
+        }
+
+        // توليد تقارير كشف الحساب التفصيلي مع فلترة التاريخ
+        function generateReport() {
+            const startDate = document.getElementById('report-start-date').value;
+            const endDate = document.getElementById('report-end-date').value;
+
+            // تصفية المبيعات بناء على التاريخ المختار
+            const filteredSales = sales.filter(s => {
+                return (!startDate || s.date >= startDate) && (!endDate || s.date <= endDate);
+            });
+
+            // تصفية المصروفات بناء على التاريخ المختار
+            const filteredExpenses = expenses.filter(exp => {
+                return (!startDate || exp.date >= startDate) && (!endDate || exp.date <= endDate);
+            });
+
+            // حساب المجموع الفرعي للتقرير
+            const totalSalesSum = filteredSales.reduce((acc, s) => acc + s.total, 0);
+            const totalExpensesSum = filteredExpenses.reduce((acc, exp) => acc + exp.amount, 0);
+            const netProfitSum = totalSalesSum - totalExpensesSum;
+
+            // طباعة القيم الملخصة في الكشف المالي
+            document.getElementById('rep-total-sales').innerText = `${totalSalesSum.toFixed(2)} ريال`;
+            document.getElementById('rep-total-expenses').innerText = `${totalExpensesSum.toFixed(2)} ريال`;
+            
+            const repNet = document.getElementById('rep-net-profit');
+            repNet.innerText = `${netProfitSum.toFixed(2)} ريال`;
+            if (netProfitSum < 0) {
+                repNet.className = 'text-xl font-bold text-rose-700 mt-1';
+            } else {
+                repNet.className = 'text-xl font-bold text-blue-700 mt-1';
+            }
+
+            // عرض البيانات المفلترة في جدول مبيعات التقرير
+            const sTbody = document.getElementById('rep-sales-rows');
+            sTbody.innerHTML = '';
+            if (filteredSales.length === 0) {
+                sTbody.innerHTML = `<tr><td colspan="5" class="p-2 text-center text-gray-400 border">لا توجد حركات مبيعات في الفترة المختارة.</td></tr>`;
+            } else {
+                filteredSales.forEach(s => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="p-2 border text-sm">${s.date}</td>
+                        <td class="p-2 border text-sm font-bold">${s.productName}</td>
+                        <td class="p-2 border text-sm">${s.price.toFixed(2)} ريال</td>
+                        <td class="p-2 border text-sm">${s.quantity} حبة</td>
+                        <td class="p-2 border text-sm font-bold text-emerald-800">${s.total.toFixed(2)} ريال</td>
+                    `;
+                    sTbody.appendChild(tr);
+                });
+            }
+
+            // عرض البيانات المفلترة في جدول مصروفات التقرير
+            const expTbody = document.getElementById('rep-expenses-rows');
+            expTbody.innerHTML = '';
+            if (filteredExpenses.length === 0) {
+                expTbody.innerHTML = `<tr><td colspan="4" class="p-2 text-center text-gray-400 border">لا توجد حركات مصروفات في الفترة المختارة.</td></tr>`;
+            } else {
+                filteredExpenses.forEach(exp => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="p-2 border text-sm">${exp.date}</td>
+                        <td class="p-2 border text-sm font-bold text-rose-800">${exp.type}</td>
+                        <td class="p-2 border text-sm font-bold">${exp.amount.toFixed(2)} ريال</td>
+                        <td class="p-2 border text-sm text-gray-500">${exp.notes}</td>
+                    `;
+                    expTbody.appendChild(tr);
+                });
+            }
+        }
+
+        // شاشة الأسعار وإدارة المنتجات
+        function renderSettingsProducts() {
+            const tbody = document.getElementById('settings-products-rows');
+            tbody.innerHTML = '';
+
+            products.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b';
+                tr.innerHTML = `
+                    <td class="p-3 text-sm font-bold">${p.name}</td>
+                    <td class="p-3 text-sm font-semibold text-emerald-700">${p.price.toFixed(2)} ريال</td>
+                    <td class="p-3 text-center">
+                        <button onclick="deleteProduct(${p.id})" class="text-rose-500 hover:text-rose-700 transition-all ${[1, 2].includes(p.id) ? 'opacity-30 cursor-not-allowed' : ''}" ${[1, 2].includes(p.id) ? 'disabled' : ''}>
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // إضافة منتج جديد بقائمة الأسعار
+        function addNewProduct() {
+            const name = document.getElementById('new-product-name').value.trim();
+            const price = parseFloat(document.getElementById('new-product-price').value);
+
+            if(!name || !price || price <= 0) {
+                showNotification('يرجى كتابة اسم الصنف وسعر بيع صحيح!', 'error');
+                return;
+            }
+
+            const newProd = {
+                id: Date.now(),
+                name: name,
+                price: price
+            };
+
+            products.push(newProd);
+            localStorage.setItem('om_majid_products', JSON.stringify(products));
+
+            // تفريغ وتحديث
+            document.getElementById('new-product-name').value = '';
+            document.getElementById('new-product-price').value = '';
+            renderSettingsProducts();
+            populateProductsDropdown();
+            showNotification('تم تسجيل الصنف الجديد بنجاح!', 'success');
+        }
+
+        // حذف صنف منتج مضاف مسبقاً (غير الأساسيين)
+        function deleteProduct(id) {
+            if([1, 2].includes(id)) {
+                showNotification('عذراً، لا يمكن حذف ألبان أم ماجد الأساسية (لبن صغير ولبن كبير)!', 'error');
+                return;
+            }
+
+            if(confirm('هل تودين بالتأكيد إلغاء هذا الصنف من قائمة البيع والأسعار؟')) {
+                products = products.filter(p => p.id !== id);
+                localStorage.setItem('om_majid_products', JSON.stringify(products));
+                renderSettingsProducts();
+                populateProductsDropdown();
+                showNotification('تم حذف الصنف من القائمة.', 'info');
+            }
+        }
+
+        // إشعار مخصص وأنيق كبديل لـ alert() المزعجة
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `fixed bottom-5 left-5 z-50 px-6 py-3 rounded-xl shadow-xl text-white font-bold transition-all transform translate-y-10 opacity-0 duration-300 flex items-center gap-2`;
+            
+            // تحديد ألوان الأيقونات والخلفية
+            if (type === 'success') {
+                notification.classList.add('bg-emerald-600');
+                notification.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${message}`;
+            } else if (type === 'error') {
+                notification.classList.add('bg-rose-600');
+                notification.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${message}`;
+            } else if (type === 'info') {
+                notification.classList.add('bg-blue-600');
+                notification.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${message}`;
+            }
+
+            document.body.appendChild(notification);
+
+            // تفعيل التحريك (Animation)
+            setTimeout(() => {
+                notification.classList.remove('translate-y-10', 'opacity-0');
+            }, 100);
+
+            // إخفاء الإشعار وتدميره بعد 3 ثوانٍ
+            setTimeout(() => {
+                notification.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
