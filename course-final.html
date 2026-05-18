@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <!-- مكتبة Chart.js للرسومات البيانية -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- مكتبة JsBarcode لتوليد الباركود بشكل فوري -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 
     <style>
         body {
@@ -72,6 +74,10 @@
                     <i class="fa-solid fa-print w-5"></i>
                     <span>التقارير والفواتير</span>
                 </button>
+                <button onclick="switchTab('labels')" id="btn-labels" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-emerald-100 font-medium transition-all hover:bg-emerald-700/50">
+                    <i class="fa-solid fa-barcode w-5"></i>
+                    <span>طباعة الملصقات والباركود</span>
+                </button>
                 <button onclick="switchTab('settings')" id="btn-settings" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-emerald-100 font-medium transition-all hover:bg-emerald-700/50">
                     <i class="fa-solid fa-gears w-5"></i>
                     <span>قائمة المنتجات والأسعار</span>
@@ -79,7 +85,7 @@
             </nav>
 
             <div class="p-4 border-t border-emerald-700 text-center text-xs text-emerald-300">
-                برنامج إدارة ألبان أم ماجد v1.1
+                برنامج إدارة ألبان أم ماجد v1.2
             </div>
         </aside>
 
@@ -89,7 +95,7 @@
             <header class="flex justify-between items-center mb-8 no-print bg-white p-4 rounded-xl shadow-sm">
                 <div>
                     <h2 id="page-title" class="text-2xl font-bold text-gray-800">لوحة التحكم الرئيسية</h2>
-                    <p class="text-sm text-gray-500">أهلاً بكِ أم ماجد، تابعي مبيعاتك وأرباحكِ اليومية بكل سهولة.</p>
+                    <p class="text-sm text-gray-500">أهلاً بكِ أم ماجد، تابعي مبيعاتك وأرباحكِ اليومية وصلاحيات الألبان بكل سهولة.</p>
                 </div>
                 <div class="flex items-center gap-3">
                     <span id="current-date-badge" class="bg-emerald-50 text-emerald-800 px-4 py-2 rounded-full font-bold text-sm border border-emerald-100">
@@ -416,7 +422,105 @@
             </div>
 
             <!-- ======================================= -->
-            <!-- 5. شاشة قائمة المنتجات والأسعار (Settings Tab) -->
+            <!-- 5. شاشة طباعة الملصقات والبار كود (Labels Tab) -->
+            <!-- ======================================= -->
+            <div id="tab-labels" class="tab-content hidden space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- لوحة إعداد الملصق -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
+                            <i class="fa-solid fa-tags text-emerald-600 ml-1"></i> إعداد ملصق المنتج وصلاحيته
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">اختر المنتج</label>
+                                <select id="label-product-select" onchange="updateLabelPreview()" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+                                    <!-- سيتم تعبئتها ديناميكياً -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">تاريخ الإنتاج</label>
+                                <input type="date" id="label-prod-date" onchange="updateLabelPreview()" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">فترة الصلاحية (بالأيام)</label>
+                                <input type="number" id="label-expiry-days" value="5" min="1" oninput="updateLabelPreview()" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">رقم التشغيلة / رقم الدفعة (مثلاً: B1)</label>
+                                <input type="text" id="label-batch" value="B1" placeholder="مثال: B1" oninput="updateLabelPreview()" class="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            </div>
+                            
+                            <div class="pt-2">
+                                <button onclick="printStickerLabel()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-print"></i>
+                                    <span>طباعة ملصق الاستيكر</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- معاينة الملصق المباشرة -->
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 lg:col-span-2 flex flex-col items-center justify-center">
+                        <h3 class="text-lg font-bold text-gray-800 mb-6 w-full border-b pb-2 text-right">
+                            <i class="fa-solid fa-eye text-emerald-600 ml-1"></i> معاينة الملصق الحية (شكل الاستيكر الفعلي)
+                        </h3>
+                        
+                        <!-- تصميم الملصق -->
+                        <div id="sticker-label-preview" class="border-2 border-dashed border-gray-300 p-6 bg-white rounded-xl shadow-md w-full max-w-[320px] text-center font-sans select-none">
+                            <!-- الترويسة والشعار -->
+                            <div class="flex items-center justify-center gap-2 mb-1">
+                                <div class="w-10 h-10 rounded-full bg-emerald-50 p-1 border border-emerald-100 flex items-center justify-center shrink-0">
+                                    <img src="logo.png" alt="شعار" class="max-w-full max-h-full object-contain rounded-full" onerror="this.outerHTML='<i class=&quot;fa-solid fa-cow text-emerald-800 text-xl&quot;></i>'">
+                                </div>
+                                <div class="text-right">
+                                    <h4 class="text-sm font-black text-emerald-800 leading-tight">ألبان أم ماجد البلدية</h4>
+                                    <p class="text-[9px] text-gray-500">طبيعي وطازج 100% بلدية</p>
+                                </div>
+                            </div>
+                            
+                            <!-- تفاصيل المنتج والسعر -->
+                            <div class="border-t border-b border-dashed border-gray-300 py-2 my-2">
+                                <h2 id="lbl-sticker-prod-name" class="text-lg font-black text-gray-800">لبن طازج كبير</h2>
+                                <p class="text-sm text-emerald-700 font-bold mt-1">السعر: <span id="lbl-sticker-price">10.00</span> ريال سعودي</p>
+                            </div>
+
+                            <!-- التواريخ والصلاحية ورقم الدفعة -->
+                            <div class="grid grid-cols-2 gap-1 text-[11px] text-gray-600 mb-3 text-right">
+                                <div>
+                                    <span class="font-bold block text-gray-400 text-[8px]">تاريخ الإنتاج:</span>
+                                    <span id="lbl-sticker-prod-date" class="font-bold">--/--/----</span>
+                                </div>
+                                <div>
+                                    <span class="font-bold block text-gray-400 text-[8px]">تاريخ الانتهاء:</span>
+                                    <span id="lbl-sticker-exp-date" class="text-red-600 font-bold">--/--/----</span>
+                                </div>
+                                <div class="col-span-2 text-center mt-1 border-t border-gray-100 pt-1">
+                                    <span class="text-gray-400 text-[8px]">رقم الدفعة / التشغيلة:</span> 
+                                    <span id="lbl-sticker-batch" class="font-mono font-bold text-gray-700">B1</span>
+                                </div>
+                            </div>
+
+                            <!-- الباركود المولد تلقائياً -->
+                            <div class="flex flex-col items-center justify-center bg-gray-50 p-2 rounded-lg border">
+                                <svg id="label-barcode" class="max-w-full"></svg>
+                                <span id="lbl-barcode-text" class="text-[9px] font-mono mt-1 text-gray-500">OMM-LABEL-BARCODE</span>
+                            </div>
+                            
+                            <div class="mt-4 text-[10px] text-gray-400 italic">
+                                شكراً لتعاملكم معنا ،، أم ماجد
+                            </div>
+                        </div>
+                        
+                        <p class="text-xs text-gray-400 mt-4 text-center">
+                            * يتكيف تصميم هذا الملصق تلقائياً مع حجم طابعات الباركود الحرارية الصغيرة عند تفعيل خيار الطباعة.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================================= -->
+            <!-- 6. شاشة قائمة المنتجات والأسعار (Settings Tab) -->
             <!-- ======================================= -->
             <div id="tab-settings" class="tab-content hidden space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -470,7 +574,7 @@
                                 </li>
                                 <li class="flex gap-2 items-start">
                                     <i class="fa-regular fa-circle-check text-emerald-600 mt-1"></i>
-                                    <span><strong>التحكم بالحساب:</strong> يمكن تصفية الكشف بين تاريخين للحصول على أرباح الأسبوع، الشهر، أو السنة بسهولة.</span>
+                                    <span><strong>طباعة استيكرات العبوات:</strong> من شاشة "طباعة الملصقات والباركود"، حددي نوع اللبن ومدة الصلاحية، ثُم قومي بطباعتها مباشرة من خلال طابعة الاستيكرات الحرارية لتلصق على العبوة.</span>
                                 </li>
                             </ul>
                         </div>
@@ -507,11 +611,13 @@
         window.onload = function() {
             setDates();
             populateProductsDropdown();
+            populateLabelProductsDropdown();
             loadSalesData();
             loadExpensesData();
             updateDashboardWidgets();
             renderDashboardCharts();
             generateReport();
+            updateLabelPreview();
         };
 
         // ضبط تواريخ اليوم التلقائية
@@ -519,6 +625,7 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('sale-date').value = today;
             document.getElementById('expense-date').value = today;
+            document.getElementById('label-prod-date').value = today;
             document.getElementById('report-start-date').value = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]; // بداية الشهر الحالي
             document.getElementById('report-end-date').value = today;
             
@@ -555,6 +662,7 @@
                 'sales': 'تسجيل عمليات بيع ألبان جديدة',
                 'expenses': 'تسجيل وإدارة المصروفات التشغيلية',
                 'reports': 'التقارير المالية والفوترة التفصيلية',
+                'labels': 'طباعة ملصقات المنتجات وتواريخ الصلاحية والباركود',
                 'settings': 'قائمة أسعار المنتجات والألبان'
             };
             document.getElementById('page-title').innerText = titles[tabId];
@@ -567,6 +675,9 @@
                 generateReport();
             } else if(tabId === 'settings') {
                 renderSettingsProducts();
+            } else if(tabId === 'labels') {
+                populateLabelProductsDropdown();
+                updateLabelPreview();
             }
         }
 
@@ -583,6 +694,20 @@
             });
 
             updateSaleCalculations();
+        }
+
+        // تعبئة قائمة المنتجات الخاصة بإنشاء الملصقات
+        function populateLabelProductsDropdown() {
+            const dropdown = document.getElementById('label-product-select');
+            if(!dropdown) return;
+            dropdown.innerHTML = '';
+            
+            products.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.innerText = `${p.name} (${p.price} ريال)`;
+                dropdown.appendChild(opt);
+            });
         }
 
         // تحديث الحساب التلقائي للضرب عند تعبئة الكمية والمنتج
@@ -950,6 +1075,237 @@
             }
         }
 
+        // تحديث وإعداد ملصق الباركود وتاريخ الانتهاء
+        function updateLabelPreview() {
+            const pSelect = document.getElementById('label-product-select');
+            if(!pSelect || !pSelect.value) return;
+
+            const pId = parseInt(pSelect.value);
+            const product = products.find(p => p.id === pId);
+            if (!product) return;
+
+            const prodDateVal = document.getElementById('label-prod-date').value;
+            const expiryDays = parseInt(document.getElementById('label-expiry-days').value) || 0;
+            const batchVal = document.getElementById('label-batch').value || 'B1';
+
+            // حساب تاريخ الانتهاء بإضافة عدد الأيام المحددة
+            const prodDate = new Date(prodDateVal);
+            const expDate = new Date(prodDate);
+            expDate.setDate(prodDate.getDate() + expiryDays);
+
+            // دالة مساعدة لتنسيق التاريخ بالشكل العربي المقروء DD/MM/YYYY
+            const formatLocalDate = (date) => {
+                const yyyy = date.getFullYear();
+                const mm = String(date.getMonth() + 1).padStart(2, '0');
+                const dd = String(date.getDate()).padStart(2, '0');
+                return `${dd}/${mm}/${yyyy}`;
+            };
+
+            // تحديث محتويات الملصق على الشاشة
+            document.getElementById('lbl-sticker-prod-name').innerText = product.name;
+            document.getElementById('lbl-sticker-price').innerText = product.price.toFixed(2);
+            document.getElementById('lbl-sticker-prod-date').innerText = formatLocalDate(prodDate);
+            document.getElementById('lbl-sticker-exp-date').innerText = formatLocalDate(expDate);
+            document.getElementById('lbl-sticker-batch').innerText = batchVal;
+
+            // تركيب كود الباركود بشكل قياسي: OMM (ألبان أم ماجد) + كود المنتج + التشغيلة + تاريخ الإنتاج رقمياً
+            const cleanDateStr = prodDateVal.replace(/-/g, '');
+            const barcodeVal = `OMM-${product.id}-${batchVal}-${cleanDateStr}`;
+            document.getElementById('lbl-barcode-text').innerText = barcodeVal;
+
+            // توليد الباركود بشكل مرئي حقيقي (CODE128)
+            try {
+                if (typeof JsBarcode !== 'undefined') {
+                    JsBarcode("#label-barcode", barcodeVal, {
+                        format: "CODE128",
+                        width: 1.5,
+                        height: 35,
+                        displayValue: false, // لا تظهر الكود الأساسي للمكتبة بالأسفل لأننا قمنا بتنسيقه بشكل أفضل
+                        margin: 0
+                    });
+                }
+            } catch (e) {
+                console.error("تعذر توليد الباركود المباشر:", e);
+            }
+        }
+
+        // دالة طباعة الملصق الحراري بفتح نافذة منبثقة معزولة ونظيفة ومصممة لمقاس الاستيكرات الحرارية
+        function printStickerLabel() {
+            const pSelect = document.getElementById('label-product-select');
+            if(!pSelect || !pSelect.value) return;
+
+            const pId = parseInt(pSelect.value);
+            const product = products.find(p => p.id === pId);
+            if (!product) return;
+
+            const pName = product.name;
+            const price = product.price.toFixed(2);
+            const prodDate = document.getElementById('lbl-sticker-prod-date').innerText;
+            const expDate = document.getElementById('lbl-sticker-exp-date').innerText;
+            const batch = document.getElementById('lbl-sticker-batch').innerText;
+            const barcodeSVG = document.getElementById('label-barcode').outerHTML;
+            const barcodeText = document.getElementById('lbl-barcode-text').innerText;
+
+            // فتح نافذة طباعة مخصصة لإعداد الطابعة الحرارية ملصقات 58 مم أو 80 مم
+            const printWindow = window.open('', '_blank', 'width=380,height=500');
+            
+            const styles = `
+                <style>
+                    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
+                    body {
+                        font-family: 'Tajawal', sans-serif;
+                        margin: 0;
+                        padding: 8px;
+                        direction: rtl;
+                        text-align: center;
+                        background: white;
+                    }
+                    .sticker-wrapper {
+                        border: 1px solid #10b981;
+                        padding: 12px;
+                        border-radius: 8px;
+                        max-width: 280px;
+                        margin: 0 auto;
+                        box-sizing: border-box;
+                    }
+                    .header-box {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 8px;
+                        margin-bottom: 6px;
+                    }
+                    .header-title-main {
+                        font-size: 13px;
+                        font-weight: 900;
+                        color: #065f46;
+                        margin: 0;
+                        text-align: right;
+                    }
+                    .header-sub-main {
+                        font-size: 9px;
+                        color: #6b7280;
+                        margin: 0;
+                        text-align: right;
+                    }
+                    .dash-divider {
+                        border-top: 1px dashed #9ca3af;
+                        margin: 6px 0;
+                        padding-top: 6px;
+                    }
+                    .product-title {
+                        font-size: 16px;
+                        font-weight: 900;
+                        color: #111827;
+                        margin: 0;
+                    }
+                    .product-price {
+                        font-size: 12px;
+                        font-weight: 700;
+                        color: #047857;
+                        margin: 3px 0 0 0;
+                    }
+                    .dates-grid-box {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 6px;
+                        font-size: 10px;
+                        color: #374151;
+                        text-align: right;
+                        margin-bottom: 6px;
+                    }
+                    .date-title-lbl {
+                        font-size: 8px;
+                        color: #9ca3af;
+                        display: block;
+                    }
+                    .date-val-bold {
+                        font-weight: 700;
+                    }
+                    .exp-val-red {
+                        color: #dc2626;
+                        font-weight: 700;
+                    }
+                    .barcode-box-sticker {
+                        background-color: #f9fafb;
+                        padding: 6px;
+                        border-radius: 6px;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        border: 1px solid #e5e7eb;
+                    }
+                    .barcode-svg-element {
+                        max-width: 100%;
+                    }
+                    .barcode-text-display {
+                        font-size: 8px;
+                        font-family: monospace;
+                        color: #4b5563;
+                        margin-top: 3px;
+                    }
+                    .footer-note-sticker {
+                        margin-top: 10px;
+                        font-size: 9px;
+                        color: #9ca3af;
+                        font-style: italic;
+                    }
+                    @media print {
+                        body {
+                            padding: 0;
+                        }
+                        .sticker-wrapper {
+                            border: none;
+                            padding: 2px;
+                        }
+                    }
+                </style>
+            `;
+
+            printWindow.document.write('<html><head><title>طباعة ملصق ألبان أم ماجد</title>' + styles + '</head><body>');
+            printWindow.document.write('<div class="sticker-wrapper">');
+            printWindow.document.write(`
+                <div class="header-box">
+                    <div style="font-size: 20px; color: #065f46;"><i class="fa-solid fa-cow"></i></div>
+                    <div>
+                        <h4 class="header-title-main">ألبان أم ماجد البلدية</h4>
+                        <p class="header-sub-main">طبيعي وطازج 100% بلدية</p>
+                    </div>
+                </div>
+                <div class="dash-divider">
+                    <h2 class="product-title">${pName}</h2>
+                    <p class="product-price">السعر: ${price} ريال سعودي</p>
+                </div>
+                <div class="dates-grid-box">
+                    <div>
+                        <span class="date-title-lbl">تاريخ الإنتاج:</span>
+                        <span class="date-val-bold">${prodDate}</span>
+                    </div>
+                    <div>
+                        <span class="date-title-lbl">تاريخ الانتهاء:</span>
+                        <span class="exp-val-red">${expDate}</span>
+                    </div>
+                </div>
+                <div style="text-align: center; font-size: 9px; margin-bottom: 6px;">
+                    <span style="color: #9ca3af;">رقم الدفعة:</span> <span class="date-val-bold">${batch}</span>
+                </div>
+                <div class="barcode-box-sticker">
+                    ${barcodeSVG}
+                    <div class="barcode-text-display">${barcodeText}</div>
+                </div>
+                <div class="footer-note-sticker">شكراً لتعاملكم معنا ،، أم ماجد</div>
+            `);
+            printWindow.document.write('</div></body></html>');
+            printWindow.document.close();
+            printWindow.focus();
+
+            // إعطاء فرصة متناهية الصغر لتجهيز وتحميل الباركود في النافذة الجديدة ثم الطباعة
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 500);
+        }
+
         // شاشة الأسعار وإدارة المنتجات
         function renderSettingsProducts() {
             const tbody = document.getElementById('settings-products-rows');
@@ -995,6 +1351,8 @@
             document.getElementById('new-product-price').value = '';
             renderSettingsProducts();
             populateProductsDropdown();
+            populateLabelProductsDropdown();
+            updateLabelPreview();
             showNotification('تم تسجيل الصنف الجديد بنجاح!', 'success');
         }
 
@@ -1010,6 +1368,8 @@
                 localStorage.setItem('om_majid_products', JSON.stringify(products));
                 renderSettingsProducts();
                 populateProductsDropdown();
+                populateLabelProductsDropdown();
+                updateLabelPreview();
                 showNotification('تم حذف الصنف من القائمة.', 'info');
             }
         }
